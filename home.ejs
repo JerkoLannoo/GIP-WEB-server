@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.min.css">
+    <link rel="stylesheet" href="/home.css">
+    <title>GIP Jerko | Home</title>
+</head>
+<body>
+    <div id="topnav">
+        <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Login</a>
+        <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Registreer</a>
+    </div>
+    <div id="main">
+        <h1>GIP Jerko</h1>
+        <h3>Hét systeem voor Wi-Fi op school.</h3>
+        
+        <div  id="pop-up"  <%if(status==0){%> style="display: none;" <%}%> >
+            <div style="width: 100%; background-color: lightgray; height: 25px; position: absolute;">
+                <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
+                <i class="fa-solid fa-xmark" onclick="document.getElementById('pop-up').style.display='none';document.getElementById('pop-up-background').style.display='none';" style="color: black; right: 5px; top: 5px; position: absolute;" id="pop-up-close"></i>
+            </div>
+            <br>
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none;" id="pop-up-spinner"></i>
+            <%if(status==2){%><p style="color: red;" id="pop-up-info">Deze QR-code is niet (meer) geldig.</p> <%}%>  
+            <%if(status==1){%><p style="color: green;" id="pop-up-info">Scannen geslaagd! Vul nu de rest van de gegevens in.</p> <%}%> 
+            <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn"><%-popupbtntext%></button>
+            <br><br>
+        </div>
+        <div id="pop-up-background"  <%if(status==0){%> style="display: none;" <%}%>>
+        </div>
+      
+        <div id="options">
+            <div class="optiondiv">
+                <h3 style="text-align: center;">Registreer via terminal</h3>
+                <%if(status!=1){%>
+                <p>Ga naar een terminal en scan je leerlingenkaart.
+                    Klik op <b>"Registreren via terminal"</b>, er zal nu 
+                    een 4 cijferige code tevoorschijn komen.
+                    Vul deze code hieronder in:
+                </p>
+                <label for="terminal-code" >Code:</label>
+                <input oninput="this.value = this.value.toUpperCase()" type="text" name="pin" pattern="[0-9]{4}" maxlength="4" id="terminal-code" style="width: 4ch;">
+                <br>
+                <br>
+                <button>Controleer code</button>
+                <br>
+                <br>
+                <hr>
+                <p style="color: red;">Je kan deze velden pas invullen als je een (geldige) code hebt ingegeven.</p>
+                <label for="username">Voornaam+Naam: </label>
+                <input disabled type="text" name="username" id="username" maxlength="50">
+                <br>
+                <br>
+                <label for="email">Email addres: </label>
+                <input disabled type="email" name="email" id="email">
+                <br><br>
+                <label for="terminal-pin">PIN-code*: </label>
+                <input disabled type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
+                <p>*Deze PIN-code zal je nodig hebben als je wil inloggen op een terminal. Vergeet deze dus niet!</p>
+                <button disabled>Registreer</button>
+                <br><br>
+               <%}else{%>
+                <p style="color: red;">Vul de onderstaande velden in.</p>
+                <label for="username">Voornaam+Naam: </label>
+                <input  onkeyup="CheckIfFilledIn(this)" type="text" name="username" id="username" maxlength="50">
+                <br>
+                <br>
+                <label for="email">Email addres: </label>
+                <input  onkeyup="CheckIfFilledIn(this)" type="email" name="email" id="email">
+                <br><br>
+                <label for="terminal-pin">PIN-code*: </label>
+                <input  onkeyup="CheckIfFilledIn(this)" type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
+                <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
+                <label for="terminal-passowrd">Wi-Fi wachtwoord*: </label>
+                <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-passowrd" style="width: 15ch;">
+                <p>*Dit wachtwoord zal je nodig hebben om je in te loggen op de Wi-Fi. Vergeet deze dus niet!</p>
+                <button onclick="postTerminalRegistrationInfo()">Registreer</button>
+                <br><br>
+                <%}%>
+           
+              
+            
+            
+            </div>
+            <%if(status!=1){%>
+            <div class="optiondiv">
+                <h3 style="text-align: center;">Registreer online</h3>
+                <p>f</p>
+            </div>
+            <div class="optiondiv">
+                <h3 style="text-align: center;">3de optie</h3>
+                <p>features: Guest device</p>
+            </div>
+            <%}%>
+        </div>
+    </div>
+    <script>
+        var filledIn = true;
+        var fillDiv=document.getElementsByClassName("optiondiv")[0]
+        var popup = document.getElementById("pop-up")
+        var popupBackground=document.getElementById("pop-up-background")
+        var popupInfo=document.getElementById("pop-up-info")
+        var popupBtn = document.getElementById("pop-up-btn")
+        function postTerminalRegistrationInfo(){
+            for(let i=0;i<fillDiv.querySelector("input").length;i++) {
+                if(fillDiv.querySelector("input")[i].value===""&&!fillDiv.querySelector("input")[i].checkValidity()){
+                    filledIn=false;
+                    return;
+                };
+            } 
+            if(!filledIn) {
+                console.log(filledIn)
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.style.color="red"
+                popupInfo.innerText="Vul alle velden in!"
+                popupBtn.innerText="Sluiten"
+            }
+            else{
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.innerText="Wacht even..."
+                document.getElementById("pop-up-spinner").style.display="block"
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/register/remote-login/send-data", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = () => {
+                document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                document.getElementById("pop-up-close").style.display="none"
+               
+                popupInfo.style.color="black"
+                popupInfo.innerText="Er is een mail verzonden naar "+document.getElementById("email").value+".\nU mag dit venster sluiten."
+                popupBtn.style.display="none"
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                };
+                xhr.send("foo=bar&lorem=ipsum");
+
+           
+            }
+        }
+        function CheckIfFilledIn(el){
+            if(el.value!==""&&el.checkValidity()){
+                el.style.borderBottom="2px solid green"
+            }
+            else{
+                el.style.borderBottom="2px solid red"
+            }
+        }
+    </script>
+</body>
