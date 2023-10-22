@@ -138,6 +138,7 @@ width: 375px;
    
 }
 #pop-up-background{
+overflow: visible;
 top: 0;
 position: absolute;
 width: 100%;
