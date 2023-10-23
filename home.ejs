@@ -8,6 +8,7 @@
 </head>
 <body>
     <input type="hidden" name="" id="bcode-input" value="<%-bcode%>">
+    <input type="hidden" name="" id="code-input" value="">
     <div id="topnav">
         <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Login</a>
         <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Registreer</a>
@@ -24,7 +25,7 @@
             <br>
            
             <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="pop-up-spinner"></i>
-            <p id="pop-up-info"></p>
+            <%if(status==0){%><p id="pop-up-info"></p> <%}%>  
             <%if(status==2){%><p style="color: red;" id="pop-up-info">Deze QR-code is niet (meer) geldig.</p> <%}%>  
             <%if(status==1){%><p style="color: green;" id="pop-up-info">Scannen geslaagd! Vul nu de rest van de gegevens in.</p> <%}%> 
             <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn"><%-popupbtntext%></button>
@@ -107,7 +108,7 @@
     <script>
         const searchParams = new URL(document.location).searchParams;
         if(searchParams.get("code")!=null){
-            var code = searchParams.get("code")
+            document.getElementById("code-input").value = searchParams.get("code")
         }
         console.log(searchParams.get("code"))
         var filledIn = true;
@@ -131,7 +132,7 @@
             }
                 
             }).then(resolve=>{
-                console.log("resolved")
+                console.log("resolved, bcode: "+document.getElementById("bcode-input").value)
                 popup.style.display="block"
                 popupBackground.style.display="block"
                 popupInfo.innerText="Wacht even..."
@@ -144,6 +145,7 @@
                 'email='+document.getElementById("email").value+'&'+
                 'pin='+document.getElementById("terminal-pin").value+'&'+
                 'password='+document.getElementById("terminal-password").value+'&'+
+                'code='+document.getElementById("code-input").value+'&'+
                 'username='+document.getElementById("username").value
                 xhr.send(data)
                 xhr.onreadystatechange = () => {
@@ -193,6 +195,7 @@
                 xhr.open("POST", "/register/check-code", true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 data= 'code='+codeInput.value
+                document.getElementById("code-input").value=codeInput.value
                 xhr.send(data)
                 xhr.onreadystatechange = () => {
                 document.getElementById("pop-up-spinner").style.display="none"
