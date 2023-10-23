@@ -119,6 +119,7 @@ app.post("/register/check-code", function(req, res){
       res.send(500)
     }
     else if(result.length){
+      postToTerminalServer(req.body.code, "/register/terminal/send-scan");
       res.setHeader("Content-Type", "application/x-www-form-urlencoded")
       res.send({success:true,bcode:result[0].barcode})
     }

@@ -202,6 +202,8 @@
                  if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 && JSON.parse(xhr.response).success) {
                     let response = JSON.parse(xhr.response)
                     console.log(response.success)
+                    document.getElementById("terminal-code").disabled=true
+                    document.getElementById("terminal-control-btn").disabled=true
                     document.getElementById("bcode-input").value=response.bcode
                     document.getElementById("check-code-info").style.display="none"
                     document.getElementById("terminal-rest-info").style.color="green"
