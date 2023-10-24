@@ -16,7 +16,6 @@
     <div id="main">
         <h1>GIP Jerko</h1>
         <h3>Hét systeem voor Wi-Fi op school.</h3>
-        
         <div  id="pop-up"  <%if(status==0){%> style="display: none;" <%}%> >
             <div style="width: 100%; background-color: lightgray; height: 25px; position: absolute;">
                 <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
@@ -44,7 +43,7 @@
                     Vul deze code hieronder in:
                 </p>
                 <label for="terminal-code" >Code:</label>
-                <input onkeyup="enableControlBtn(this)" oninput="this.value = this.value.toUpperCase()" type="text" name="pin" maxlength="4" id="terminal-code" style="width: 5ch;" minlength="4" >
+                <input minlength="4" onkeyup="enableControlBtn(this)" oninput="this.value = this.value.toUpperCase()" type="text" name="pin" maxlength="4" id="terminal-code" style="width: 5ch;"  >
                 <br>
                 <p id="check-code-info" style="color: red; display: none;">Deze code is niet geldig.</p>
                 <br>
@@ -62,7 +61,7 @@
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="email" name="email" id="email">
                     <br><br>
                     <label for="terminal-password">Wi-Fi wachtwoord*: </label>
-                    <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
+                    <input disabled onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
                     <p>*Dit wachtwoord zal je nodig hebben om je in te loggen op de Wi-Fi. Vergeet deze dus niet!</p>
                     <label  for="terminal-pin">PIN-code*: </label>
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
@@ -180,7 +179,7 @@
             }
         }
         function enableControlBtn(el){
-            if(el.value!==""&&el.checkValidity()){
+            if(el.value.length==4){
                 el.style.borderBottom="2px solid green"
                 document.getElementById("terminal-control-btn").disabled = false
             }
