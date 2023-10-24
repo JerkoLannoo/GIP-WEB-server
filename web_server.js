@@ -76,7 +76,7 @@ app.post("/register/remote-login/send-data", function(req,res){
   let str="bcdfghjklmpqrstvwxyz0123456789BCDFGHJKLMPQRSTVWXZ"
   let code=""
   for(let i=0; i<50;i++) code+=str.charAt(Math.random()*str.length)
-  con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(data.username)+","+JSON.stringify(data.pin)+","+data.bcode+","+JSON.stringify(code)+","+JSON.stringify(data.password)+", 0);", function(err, result){
+  con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(data.username)+","+JSON.stringify(data.pin)+","+data.bcode+","+JSON.stringify(data.code)+","+JSON.stringify(data.password)+", 0);", function(err, result){
     if(err) {
       console.log(err)
       res.sendStatus(500)
