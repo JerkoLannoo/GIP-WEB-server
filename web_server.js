@@ -103,6 +103,11 @@ app.get("/register/verify-email", function(req,res){
         }
         else res.send("ok")
       })
+      con.query("DELETE FROM verify WHERE code="+JSON.stringify(req.query.code), function(err){
+        if (err) {
+          console.log(err)
+        }
+      })
     }
     else{
       setTimeout(() => {
