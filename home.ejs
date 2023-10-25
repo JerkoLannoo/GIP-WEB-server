@@ -36,6 +36,7 @@
         <div id="options">
             <div class="optiondiv">
                 <h3 style="text-align: center;">Registreer via terminal</h3>
+                <p class="extra-info-label">Werking verzekerd</p>
                 <%if(status!=1){%>
                 <p>Ga naar een terminal en scan je leerlingenkaart.
                     Klik op <b>"Registreren via terminal"</b>, er zal nu 
@@ -57,12 +58,12 @@
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="text" name="username" id="username" maxlength="50">
                     <br>
                     <br>
-                    <label for="email">Email addres: </label>
+                    <label for="email">E-mail addres: </label>
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="email" name="email" id="email">
                     <br><br>
                     <label for="terminal-password">Wi-Fi wachtwoord*: </label>
                     <input disabled onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
-                    <p>*Dit wachtwoord zal je nodig hebben om je in te loggen op de Wi-Fi. Vergeet deze dus niet!</p>
+                    <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
                     <label  for="terminal-pin">PIN-code*: </label>
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
                     <p>*Deze PIN-code zal je nodig hebben als je wil inloggen op een terminal. Vergeet deze dus niet!</p>
@@ -75,15 +76,15 @@
                 <input  onkeyup="CheckIfFilledIn(this)" type="text" name="username" id="username" maxlength="50">
                 <br>
                 <br>
-                <label for="email">Email addres: </label>
+                <label for="email">E-mail addres: </label>
                 <input  onkeyup="CheckIfFilledIn(this)" type="email" name="email" id="email">
                 <br><br>
                 <label for="terminal-pin">PIN-code*: </label>
-                <input  onkeyup="CheckIfFilledIn(this)" type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
+                <input  onkeyup="CheckIfFilledIn(this)" type="password" name="pin" pattern="[0-9]{4}" maxlength="4" id="terminal-pin" style="width: 4ch;">
                 <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
                 <label for="terminal-password">Wi-Fi wachtwoord*: </label>
                 <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
-                <p>*Dit wachtwoord zal je nodig hebben om je in te loggen op de Wi-Fi. Vergeet deze dus niet!</p>
+                <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
                 <button onclick="postTerminalRegistrationInfo()">Registreer</button>
                 <br><br>
                 <%}%>
@@ -95,10 +96,29 @@
             <%if(status!=1){%>
             <div class="optiondiv">
                 <h3 style="text-align: center;">Registreer online</h3>
-                <p>f</p>
+                <p class="extra-info-label">Snelst</p>
+                <div id="online-input-div">
+                    <br>
+                    <label for="">Code leerlingenkaart: </label>
+                    <input type="text" pattern="[0-9]{5}" name="" id="" maxlength="5">
+                    <br>
+                    <br>
+                    <label for="">Voornaam+Naam: </label>
+                    <input type="text" name="" id="" maxlength="50">
+                    <br>
+                    <br>
+                    <label for="">E-mail addres: </label>
+                    <input type="text" name="" id="" maxlength="50">
+                    <br>
+                    <br>
+                    <label for="">PIN-code: </label>
+                    <input type="text" name="" id="" maxlength="50">
+                </div>
+              
             </div>
             <div class="optiondiv">
-                <h3 style="text-align: center;">3de optie</h3>
+                <h3 style="text-align: center;">Login op terminal via smartphone</h3>
+                <p class="extra-info-label">Zonder leerlingenkaart</p>
                 <p>features: Guest device</p>
             </div>
             <%}%>
