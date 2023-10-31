@@ -1,0 +1,137 @@
+*{
+    overflow-y: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+html,body{
+    margin: 0;
+   
+   height: 100%;
+}
+p{
+    font-size: 14pt;
+}
+.fa-solid.fa-xmark{
+    cursor: pointer;
+}
+#topnav{
+
+    margin: 0;
+    padding: 0;
+    background-color: #414247;
+    width: 100%;
+    overflow: hidden;
+}
+#topnav a{
+    transition-duration: 0.4s;
+    margin: 5px;
+    text-decoration: none;
+    padding: 5px;
+    background-color: #036ffc;
+    border-radius: 5px;
+    color: white;
+    float: right !important;
+}
+#topnav a:hover{
+    background-color: #4294ff;
+}
+#main{
+    height: 100%;
+    background-color: #96bcfa;
+    bottom: 0;
+    text-align: center;
+    display: block;
+}
+
+
+
+button{
+    cursor: pointer;
+    font-size: 13pt;
+    border-radius: 5px;
+    background-color: #036ffc;
+    border-color: #036ffc;
+    color: white;
+}
+button:hover{
+    background-color: #4294ff;
+    border-color: #4294ff;
+}
+button:disabled{
+    background-color: gray;
+    border-color: gray;
+    color: black;
+    cursor: default;
+}
+#pop-up{
+    animation: popupanimation 0.3s;
+background-color: white;
+position: absolute;
+border-radius: 5px;
+border: 2px solid gray;
+z-index: 6;
+top: 25%;
+left: 50%;
+margin-top: -50px;
+margin-left: -192px;
+width: 375px;
+   
+}
+#pop-up-background{
+overflow: visible;
+top: 0;
+position: absolute;
+width: 100%;
+height: 100%;
+z-index: 4;
+background-color: black;
+opacity: 50%;
+}
+#login-form{
+margin-top: 25px !important;
+background-color: white;
+border-radius: 15px;
+padding: 10px;
+margin: auto;
+width: 50%;
+}
+#login-form input{
+    transition-duration: 0.4s;
+    outline: none !important;
+    border: none;
+    border-radius: 0px !important;
+    border-bottom: 2px solid gray;
+}
+#login-form input:invalid{
+    border-bottom:2px solid red;
+    box-shadow: none;
+    }
+#login-form input:valid{
+    border-bottom:2px solid green;
+    box-shadow: none;
+}
+@media only screen and (max-device-width: 1000px)  {
+#main{
+    overflow-y: hidden;
+    width: 100%;
+    height: 100%;
+}
+body{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+}
+}
+@keyframes popupanimation{
+    0%{
+        transform: scale(0.8);
+        opacity: 0%;
+    }
+    50%{
+        transform: scale(1.05);
+        opacity: 100%;
+    }
+    100%{
+        transform: scale(1);
+        opacity: 100%;
+    }
+}

@@ -10,7 +10,7 @@
     <input type="hidden" name="" id="bcode-input" value="<%-bcode%>">
     <input type="hidden" name="" id="code-input" value="">
     <div id="topnav">
-        <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Login</a>
+        <a href="/login" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Login</a>
         <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Registreer</a>
     </div>
     <div id="main">
@@ -67,7 +67,7 @@
                     <label  for="terminal-pin">PIN-code*: </label>
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
                     <p>*Deze PIN-code zal je nodig hebben als je wil inloggen op een terminal. Vergeet deze dus niet!</p>
-                    <button disabled id="terminal-register-btn" onclick="postTerminalRegistrationInfo()">Registreer</button>
+                    <button disabled id="terminal-register-btn" onclick="postRegistrationInfo(this.parentElement, true)">Registreer</button>
                 </div>
                 <br><br>
                <%}else{%>
@@ -83,9 +83,9 @@
                 <input  onkeyup="CheckIfFilledIn(this)" type="password" name="pin" pattern="[0-9]{4}" maxlength="4" id="terminal-pin" style="width: 4ch;">
                 <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
                 <label for="terminal-password">Wi-Fi wachtwoord*: </label>
-                <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
+                <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 16ch;">
                 <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
-                <button onclick="postTerminalRegistrationInfo()">Registreer</button>
+                <button onclick="postRegistrationInfo(this.parentElement, true)">Registreer</button>
                 <br><br>
                 <%}%>
            
@@ -99,20 +99,25 @@
                 <p class="extra-info-label">Snelst</p>
                 <div id="online-input-div">
                     <br>
-                    <label for="">Code leerlingenkaart: </label>
-                    <input type="text" pattern="[0-9]{5}" name="" id="" maxlength="5">
+                    <label for="online-bcode-input">Code leerlingenkaart: </label>
+                    <input type="text" pattern="[0-9]{5}" name="bcode" id="online-bcode-input" maxlength="5">
                     <br>
                     <br>
-                    <label for="">Voornaam+Naam: </label>
-                    <input type="text" name="" id="" maxlength="50">
+                    <label for="online-username">Voornaam+Naam: </label>
+                    <input type="text" name="username" id="online-username" maxlength="50">
                     <br>
                     <br>
-                    <label for="">E-mail addres: </label>
-                    <input type="text" name="" id="" maxlength="50">
+                    <label for="online-email">E-mail addres: </label>
+                    <input type="email" name="email" id="online-email" maxlength="50">
                     <br>
                     <br>
-                    <label for="">PIN-code: </label>
-                    <input type="text" name="" id="" maxlength="50">
+                    <label for="online-password">Wachtwoord*: </label>
+                    <input type="password" name="password" id="online-password" minlength="8" maxlength="50" style="width: 16ch;" >
+                    <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
+                    <label for="online-pin">PIN-code: </label>
+                    <input type="password" id="online-pin" name="pin" pattern="[0-9]{4}" maxlength="4" style="width: 5ch;" >
+                    <P>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</P>
+                    <button onclick="postRegistrationInfo(this.parentElement, false)">Registreer</button>
                 </div>
               
             </div>
@@ -137,17 +142,17 @@
         var popupBackground=document.getElementById("pop-up-background")
         var popupInfo=document.getElementById("pop-up-info")
         var popupBtn = document.getElementById("pop-up-btn")
-        function postTerminalRegistrationInfo(){
-            console.log(fillDiv.querySelectorAll("input").length)
+
+        function postRegistrationInfo(parent, useInputBarcode){
             return new Promise((resolve, reject)=>{
-                for(let i=0;i<fillDiv.querySelectorAll("input").length;i++) {
-                console.log("checking if filled in, "+fillDiv.querySelectorAll("input")[i].value)
-                if(fillDiv.querySelectorAll("input")[i].value===""||!fillDiv.querySelectorAll("input")[i].checkValidity()){
+                for(let i=0;i<parent.querySelectorAll("input").length;i++) {
+                console.log("checking if filled in, "+parent.querySelectorAll("input")[i].value)
+                if(parent.querySelectorAll("input")[i].value===""||!parent.querySelectorAll("input")[i].checkValidity()){
                     console.log("not filled in")
                     reject(i)
                     return
                 }
-                else if(i===fillDiv.querySelectorAll("input").length-1) resolve()
+                else if(i===parent.querySelectorAll("input").length-1) resolve()
             }
                 
             }).then(resolve=>{
@@ -157,23 +162,48 @@
                 popupInfo.innerText="Wacht even..."
                 popupBtn.style.display="none"
                 document.getElementById("pop-up-spinner").style.display="block"
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "/register/remote-login/send-data", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                data= 'bcode='+document.getElementById("bcode-input").value+'&'+
-                'email='+document.getElementById("email").value+'&'+
+                let bcode="";
+                let email=""
+                if(useInputBarcode) {
+                    bcode = document.getElementById("bcode-input").value;
+                    email=document.getElementById("email").value
+                    data= 'bcode='+bcode+'&'+
+                'email='+email+'&'+
+                'pin='+document.getElementById("online-pin").value+'&'+
+                'password='+document.getElementById("online-password").value+'&'+
+                'username='+document.getElementById("username").value
+                }  
+                else {
+                    bcode= document.getElementById("online-bcode-input").value
+                    email=document.getElementById("online-email").value
+                    data= 'bcode='+bcode+'&'+
+                'email='+email+'&'+
                 'pin='+document.getElementById("terminal-pin").value+'&'+
                 'password='+document.getElementById("terminal-password").value+'&'+
                 'code='+document.getElementById("code-input").value+'&'+
-                'username='+document.getElementById("username").value
+                'username='+document.getElementById("online-username").value
+                } 
+                console.log(email)
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/register/remote-login/send-data", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          
                 xhr.send(data)
                 xhr.onreadystatechange = () => {
                 document.getElementById("pop-up-spinner").style.display="none"
                  if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                document.getElementById("pop-up-close").style.display="none"
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                        document.getElementById("pop-up-close").style.display="none"
                 popupInfo.style.color="black"
-                popupInfo.innerText="Er is een mail verzonden naar "+document.getElementById("email").value+".\nU mag dit venster sluiten."
+                popupInfo.innerText="Er is een mail verzonden naar "+email+".\nU mag dit venster sluiten."
                 popupBtn.style.display="none"
+                    }
+                    else{
+                        popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
                 }
                 else{
                 popupInfo.style.color="red"
@@ -221,6 +251,7 @@
                  if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 && JSON.parse(xhr.response).success) {
                     let response = JSON.parse(xhr.response)
                     console.log(response.success)
+                    console.log(response.bcode)
                     document.getElementById("terminal-code").disabled=true
                     document.getElementById("terminal-control-btn").disabled=true
                     document.getElementById("bcode-input").value=response.bcode
