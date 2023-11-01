@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.min.css">
+    <link rel="stylesheet" href="/dashboard.css">
+    <title>GIP Jerko | Dashboard</title>
+</head>
+<body >
+
+    <div id="topnav">
+        <button onclick="showTab(document.getElementById('history'));">Geschiedenis</button>
+        <button onclick="showTab(document.getElementById('nieuw'))">Nieuw</button>
+    </div>
+    <div id="main">
+        <div id="nieuw">
+            <h3>Nieuw aanmaken</h3>
+            <hr>
+            <table id="new-table" >
+                <thead>
+                        <th>Optie</th>
+                        <th>Waarde</th>
+                        <th>Prijs (€)</th>
+                   
+                </thead>
+                <tbody id="new-table-body">
+                    <tr>
+                        <td class="option-column">Activatie datum: </td>
+                        <td class="option-column"><input type="date" name="" id="" required></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td class="option-column">Duratie: </td>
+                        <td class="option-column">
+                            <input type="number" value="1" name="" id="duration" value="0" min="1" max="30" onchange="calcPrice(document.getElementById('devices'), document.getElementById('normal-price'), 'n')">&ensp;
+                            <select name="" id="normal-duration-select" onchange="calcPrice(document.getElementById('devices'), document.getElementById('normal-price'), 'n')">
+                            <option value="1">Uur</option>
+                            <option value="24">Dag(en)</option>
+                            <option value="720">Maand(en)</option>
+                        </select>
+                    </td>
+                    <td id="duration-price">-</td>
+                    </tr>
+                    <tr>
+                        <td class="option-column">Aantal apparaten: </td>
+                        <td class="option-column"><input type="number" name="" id="devices" min="0" max="50" step="1" value="0" onchange="calcPrice(this, document.getElementById('normal-price'), 'n')"></td>
+                        <td id="device-price">-</td>
+                    </tr>
+                    <tr>
+                        <td class="option-column" colspan="2">Prijs:</td>
+                        <td  id="normal-price">0</td>
+                    </tr>
+                    <tr>
+                        <td class="option-column">Duratie gast apparaten: </td>
+                        <td class="option-column">
+                            <input type="number" value="1" name="" id="g-duration" value="0" min="1" max="30" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')">&ensp;
+                            <select name="" id="g-duration-select" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')">
+                            <option value="1">Uur</option>
+                            <option value="24">Dag(en)</option>
+                            <option value="720">Maand(en)</option>
+                        </select>
+                    </td>
+                    <td id="g-duration-price">-</td> 
+                    </tr>
+
+                    <tr>
+                        <td class="option-column">Aantal gast apparaten: </td>
+                        <td class="option-column"><input type="number" name="" id="g-devices" min="0" max="50" step="1" value="0" onchange="calcPrice(this, document.getElementById('g-price'), 'g')"></td>
+                        <td id="g-device-price">-</td>
+                    </tr>
+                    <tr>
+                        <td class="option-column" colspan="2">Prijs:</td>
+                        <td  id="g-price">0</td>
+                    </tr>
+                    <tr>
+                        <td class="option-column">Adblocker?*</td>
+                        <td class="option-column"><label for="adblockj">Ja</label><input type="radio" name="adblock" id="adblockj"><label for="adblockn">Nee</label><input type="radio" name="adblock" id="adblockn" checked></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="option-column"><b>Totaal: </b></td>
+                        <td><b id="total-price">0</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="history" >
+            <h3 style="text-align: center !important;">Geschiedenis</h3>
+            <p style="color: red;" id="info"></p>
+            <hr>
+            <table id="history-table" >
+                <thead>
+                        <th>Aanmaak datum</th>
+                        <th>Duratie</th>
+                        <th>Prijs</th>
+                        <th>Aantal apparaten</th>
+                        <th>Login datum</th>
+                   
+                </thead>
+                <tbody id="history-table-body"></tbody>
+            </table>
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; margin-bottom: 35px; display: none;" id="loading-spinner"></i>
+        </div>
+    </div>
+    <script>
+        var prices = [];
+        getHistory()
+        getPrices()
+        for(let i=0;i<document.getElementById("main").querySelectorAll("div").length;i++) document.getElementById("main").querySelectorAll("div")[i].style.display="none"
+        document.getElementById("history").style.display="block"
+        function showTab(el){
+            for(let i=0;i<document.getElementById("main").querySelectorAll("div").length;i++) document.getElementById("main").querySelectorAll("div")[i].style.display="none"
+            el.style.display="block"
+        }
+        function getHistory(){
+            console.log("ok")
+            document.getElementById("loading-spinner").style.display="block"
+            fetch("/user/dashboard/get-history")
+            .then(response=>response.text())
+            .then(data=>{
+                console.log(data)
+                let history=JSON.parse(data)
+                console.log(history.price)
+                for(let i=0;i<history.length;i++) {
+                let el = document.createElement("tr")
+                el.setAttribute("class", "history")
+                let date = document.createElement("td")
+                date.setAttribute("class", "date")
+                date.innerText=history[0].date
+                el.appendChild(date)
+                let duration = document.createElement("td")
+                duration.innerText=history[0].duration
+                el.appendChild(duration)
+                let price = document.createElement("td")
+                price.setAttribute("class", "price")
+                price.innerText="€"+history[0].price
+                el.appendChild(price)
+                let devices = document.createElement("td")
+                devices.setAttribute("class", "devices")
+                devices.innerText=history[0].devices
+                el.appendChild(devices)
+                let ldate = document.createElement("td")
+                ldate.setAttribute("class", "devices")
+                ldate.innerText=history[0].ldate
+                el.appendChild(ldate)
+                document.getElementById("history-table-body").appendChild(el)
+            }
+            document.getElementById("loading-spinner").style.display="none"
+            }).catch(err=>{
+                console.log(err)
+                document.getElementById("info").innerText="Er ging iets mis."
+                document.getElementById("loading-spinner").style.display="none"
+            })
+
+        }
+        function calcTotPrice(){
+            console.log("calc tot price")
+            document.getElementById("total-price").innerText=(parseFloat(document.getElementById("normal-price").innerText)+parseFloat(document.getElementById("g-price").innerText)).toFixed(2)
+        }
+        function getPrices(){
+            fetch("/user/dashboard/get-prices")
+            .then(response=>response.json())
+            .then(data=>{
+                console.log(data);
+                data.forEach(element => {
+                    prices.push(element);
+                });
+                console.log(prices);
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        }
+        function calcPrice(input, priceField, type){
+            console.log(priceField)
+            if(type==="n"){
+                for(let i=prices.length-1;i>=0;i--){
+                    if(prices[i].devices<=input.value&&prices[i].time<=document.getElementById("duration").value*document.getElementById("normal-duration-select").value) {
+                        console.log(prices)
+                        priceField.innerText=(prices[i].price*input.value*document.getElementById("duration").value*document.getElementById("normal-duration-select").value).toFixed(2);
+                        console.log("price: "+prices[i].price.toFixed(2))
+                        break
+                    }
+                }
+            }
+            else{
+                for(let i=prices.length-1;i>=0;i--){
+                    if(prices[i].devices<=input.value&&prices[i].time<=document.getElementById("g-duration").value*document.getElementById("g-duration-select").value) {
+                        console.log(prices)
+                        priceField.innerText=(prices[i].price*input.value*document.getElementById("g-duration").value*document.getElementById("g-duration-select").value).toFixed(2);
+                        console.log("price: "+prices[i].price.toFixed(2))
+                        break
+                    }
+                }
+                
+            }
+            setTimeout(() => {
+                calcTotPrice()
+            }, 10);
+        }
+
+    </script>
+</body>
