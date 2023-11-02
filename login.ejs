@@ -30,11 +30,12 @@
         <div id="pop-up-background"  <%if(status==0){%> style="display: none;" <%}%> >
         </div>
         <form action="/login/send-data" id="login-form" method="post">
+            <p style="font-weight: bold; color: red;"><%-fout%></p>
             <label for="email">E-mail addres: </label>
             <input type="email" name="email" id="email" required >
             <br><br>
             <label for="wachtwoord">Wachtwoord: </label>
-            <input type="password" name="wachtwoord" id="wachtwoord" minlength="8" maxlength="15" required >
+            <input type="password" name="password" id="wachtwoord" minlength="8" maxlength="15" required >
             <br><br>
             <button type="submit">Log in</button>
         </form>

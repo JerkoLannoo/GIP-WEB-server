@@ -106,10 +106,13 @@ opacity: 50%;
     margin: 10px 10px;
 }
 #history-table thead tr th{
-width: 20%;
+width: 15%;
 }
 #history-table{
     width: 100%;
+}
+#history-table-body tr td{
+   padding: 10px 0;
 }
 #new-table{
     margin: auto;
@@ -157,14 +160,23 @@ table option{
 @media only screen and (max-device-width: 1000px)  {
 #main{
     overflow-y: visible;
-    width: 100%;
+    overflow-x: scroll;
+    height: 100%;
+}
+#history{
+    overflow-x: scroll !important;
+    width: 750px;
     height: 100%;
 }
 body{
-    overflow-y: scroll;
     overflow-x: hidden;
+    overflow-y: scroll;
     width: 100%;
     background-color: #036ffc;
+}
+#history-table{
+    width: 750px;
+    overflow-x: scroll !important;
 }
 }
 @keyframes popupanimation{
