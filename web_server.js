@@ -9,7 +9,7 @@ const path = require('path');
 var mysql = require('mysql');
 const bodyParser = require('body-parser')
 const mail=require("./mail.js")
-const session=require("express-session")
+var session=require("express-session")
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -30,8 +30,9 @@ app.use(express.static(__dirname+'/public/'));
 app.use(session({
   secret: setId(),
   resave: false,
+  httpOnly:false,
   saveUninitialized: true,
-  cookie: { secure: true }
+  cookie: { secure: false }
 }))
 setInterval(() => {
   con.query("SELECT 1;", function (err, result) {
@@ -87,7 +88,7 @@ app.get("/register/remote-registration", function(req,res){
 })
 app.post("/register/remote-login/send-data", function(req,res){
   let data=req.body
-  //PASSWORD functie toeveogen voor PIN en password
+  //PASSWORD functie toevoegen voor PIN en password
   let str="bcdfghjklmpqrstvwxyz0123456789BCDFGHJKLMPQRSTVWXZ"
   let code=""
   for(let i=0; i<50;i++) code+=str.charAt(Math.random()*str.length)
@@ -161,9 +162,51 @@ app.post("/register/check-code", function(req, res){
 })
 app.get("/login", (req, res)=>{
 if(!req.session.login){
-  res.render(__dirname+"/login.ejs", {status:0})
+  res.render(__dirname+"/login.ejs", {status:0, fout:""})
 }
 else res.send("ok")
+})
+app.post("/login/send-data", function(req,res){
+  con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.body.email)+" AND BINARY password=SHA2("+JSON.stringify(req.body.password)+", 512);", function(err,result){
+    if(err) {
+      console.log(err)
+      res.render(__dirname+"/login", {fout: "Er ging iets mis.", status:0})
+    } 
+     if(result.length) {
+  req.session.login=true
+  console.log(req.session.login)
+  req.session.username=result[0].username
+  req.session.email=result[0].email
+  setTimeout(()=>{
+    res.redirect("/user/dashboard")
+  },1000)
+  }
+  else res.render(__dirname+"/login", {fout: "Onjuist e-mail addres of wachwoord.", status:0})
+  })
+})
+app.get("/user/dashboard", function(req,res){
+  if(req.session.login){
+    res.render(__dirname+"/dashboard.ejs")
+  }
+  else res.redirect("/login")
+})
+app.get("/user/dashboard/get-history", function(req,res){
+  if(req.session.login){
+    res.send([{duration: 24, date: "24/01/2023", price: 0.50, devices: 1, ldate: "25/01/2023"}])
+  }
+  else res.sendStatus(501)
+})
+app.get("/user/dashboard/get-prices", function(req,res){
+  if(req.session.login){
+   con.query("SELECT * FROM prijzen ORDER BY price DESC", function(err,result){
+    if(err){
+      console.log(err)
+      res.sendStatus(500)
+    }
+    else res.send(result)
+   })
+  }
+  else res.sendStatus(501)
 })
 app.get("/", function(req,res){
   res.render(__dirname+"/home.ejs", {status: 0, popupbtntext:"Sluiten", bcode:""})
