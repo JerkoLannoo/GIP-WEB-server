@@ -94,7 +94,7 @@ app.post("/register/remote-login/send-data", function(req,res){
   let str="bcdfghjklmpqrstvwxyz0123456789BCDFGHJKLMPQRSTVWXZ"
   let code=""
   for(let i=0; i<50;i++) code+=str.charAt(Math.random()*str.length)
-  con.query("SELECT * FROM verify WHERE email="+JSON.stringify(data.email)+"; SELECT * FROM users WHERE email="+JSON.stringify(data.email), [1,2], function(err, result){
+  con.query("SELECT * FROM verify WHERE email="+JSON.stringify(data.email)+"; SELECT * FROM users WHERE email="+JSON.stringify(data.email)+" OR bcode="+data.bcode+" OR username='"+data.username+"'", [1,2], function(err, result){
     if(err) console.log(err)
     else if(result[0].length) res.send({success:false, msg: "Je hebt al een e-mail gekregen."})
     else if(result[1].length) res.send({success:false, msg: "Je bent al een gebruiker."})
@@ -225,11 +225,11 @@ app.post("/user/dashboard/create-new", function(req,res){
        let password=""
        let totprice = parseFloat(price[0])+parseFloat(price[1])//anders worden ze stringmatig opgetelt
        if(totprice<=result[1][0].saldo&&(req.body.devices>0||req.body.gDevices>0)){
-        for(let i=0;i<8;i++) password+=str.charAt(Math.round(Math.random*str.length))
+        for(let i=0;i<8;i++) password+=str.charAt(Math.random()*str.length)
            //voor normale apparaten
              var datum = Math.floor(new Date().getTime()/1000)
              if(req.body.devices>0&&req.body.gDevices>0){//req.body.devices werkte niet
-               con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"', '"+req.session.password+"');INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast', '"+password+"'); UPDATE users SET saldo=saldo-"+totprice+" WHERE email='"+req.session.email+"'",[1,2,3], function(err,result){
+               con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"_"+formatTime(req.body.duration)+"', '"+req.session.password+"');INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast_"+formatTime(req.body.gDuration)+"', '"+password+"'); UPDATE users SET saldo=saldo-"+totprice+" WHERE email='"+req.session.email+"'",[1,2,3], function(err,result){
                  if(err){
                   console.log(err)
                   res.sendStatus(400)
@@ -238,7 +238,7 @@ app.post("/user/dashboard/create-new", function(req,res){
                  })
              }
              else if(req.body.devices>0){
-               con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"', '"+req.session.password+"');UPDATE users SET saldo=saldo-"+(price[0])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
+               con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"_"+formatTime(req.body.duration)+"', '"+req.session.password+"');UPDATE users SET saldo=saldo-"+(price[0])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
                  if(err){
                   console.log(err)
                   res.sendStatus(400)
@@ -247,7 +247,7 @@ app.post("/user/dashboard/create-new", function(req,res){
                  })
              }
              else if(req.body.gDevices>0){
-               con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast', '"+password+"');UPDATE users SET saldo=saldo-"+(price[1])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
+               con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast_"+formatTime(req.body.gDuration)+"', '"+password+"');UPDATE users SET saldo=saldo-"+(price[1])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
                  if(err){
                   console.log(err)
                   res.sendStatus(400)
@@ -323,4 +323,16 @@ server.listen(8080, ()=>{
     else prices.push(0.00)
   console.log("prices: "+prices)
 return prices
+}
+function formatTime(time){
+  console.log("time: "+time)
+  if(time<24) return time +"h"
+  else if(time>=24&&time<720) {
+      console.log("tijd groter dan 24: "+time/24+time%24)
+      return (time/24)+"d"
+  }
+  else if(time>=720) {
+      console.log("tijd groter dan 24")
+      return (time/720)+"m"
+  }
 }
