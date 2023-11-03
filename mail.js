@@ -6,7 +6,7 @@ function mail(email, username, code, bcode){
     service: 'gmail',
     auth: {
     user: 'smtp.testwebsite@gmail.com',
-    pass: 'tzlojyovdufxhmau'
+    pass: '********'
     }
     })
     var mailOptions = {
