@@ -272,7 +272,7 @@
                 popupInfo.style.color="red"
                 popupInfo.innerText="Wacht even..."
                 popupBtn.innerText="Sluiten"
-           let data= 'activationDate='+Math.floor(new Date(document.getElementById("activation-date").value).getTime() / 1000)+'&'+
+           let data= 'activationDate='+new Date(document.getElementById("activation-date").value).getTime()+'&'+
                 'duration='+document.getElementById("duration").value*document.getElementById("normal-duration-select").value+'&'+
                 'devices='+document.getElementById("devices").value+'&'+
                 'gDuration='+document.getElementById("g-duration").value*document.getElementById("g-duration-select").value+'&'+
@@ -310,7 +310,7 @@
         function formatDate(date){
             if(date!=null)
             {       
-            var date = new Date(date*1000);//delen door duizend boven mag weg
+            var date = new Date(parseInt(date));
             return date.toLocaleDateString("en-GB")
             }
             else return "Nog niet ingelogd"

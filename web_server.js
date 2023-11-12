@@ -227,7 +227,7 @@ app.post("/user/dashboard/create-new", function(req,res){
        if(totprice<=result[1][0].saldo&&(req.body.devices>0||req.body.gDevices>0)){
         for(let i=0;i<8;i++) password+=str.charAt(Math.random()*str.length)
            //voor normale apparaten
-             var datum = Math.floor(new Date().getTime()/1000)
+             var datum = new Date().getTime()
              if(req.body.devices>0&&req.body.gDevices>0){//req.body.devices werkte niet
                con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"_"+formatTime(req.body.duration)+"', '"+req.session.password+"');INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast_"+formatTime(req.body.gDuration)+"', '"+password+"'); UPDATE users SET saldo=saldo-"+totprice+" WHERE email='"+req.session.email+"'",[1,2,3], function(err,result){
                  if(err){
