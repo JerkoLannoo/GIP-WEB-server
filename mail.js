@@ -20,7 +20,7 @@ function mail(email, username, code, bcode){
     <p>Deze email is verzonden ter verificatie van uw Wi-Fi account. Dit is de code van uw leerlingenkaart:</p>
     <h2>`+bcode+`</h2>
     <p>Als deze code overeenkomt met de code op uw leerlingkaart en u een account wilt aanmaken, klik dan hieronder:</p>
-    <a href="http://localhost:8080/register/verify-email?code=`+code+`&email=`+email+`">Verifiëren</a>
+    <a href="https://gip.jerkolannoo.com/register/verify-email?code=`+code+`&email=`+email+`">Verifiëren</a>
     <br>
     <br>
     <p>Als de code niet overeenkomt of als u <b>geen</b> account wilt aanmaken, negeer deze mail dan.</p>

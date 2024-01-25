@@ -13,7 +13,6 @@ p{
     cursor: pointer;
 }
 #topnav{
-
     margin: 0;
     padding: 0;
     background-color: #414247;
@@ -66,16 +65,15 @@ margin-left: -3px;
     transition-duration: 0.4s;
     top: 0;
     margin-top: 1% !important;
-    
     margin: 0px 15px;
     padding: 0px 10px;
- 
     word-wrap: break-word;
     border-radius: 10px;
     max-width: 400px;
-
-    background-color: #f7ff03;
     opacity: 60%;
+    border: 1px solid gray;
+    box-shadow: 0px 0px 1px 1px;
+    background-color: #e8f1fc;
 }
 .optiondiv:hover{
     transform: scale(1.02);
@@ -87,7 +85,6 @@ margin-left: -3px;
     border: none;
     border-radius: 0px !important;
     border-bottom: 2px solid gray;
-    background-color: #f7ff03;
 }
 .optiondiv input:focus{
 border-bottom:2px solid #036ffc;
@@ -117,7 +114,7 @@ button:disabled{
     background-color: gray;
     border-color: gray;
     color: black;
-    cursor: default;
+    cursor: not-allowed;
 }
 #terminal-code{
 border-radius: 5px;
@@ -139,7 +136,7 @@ width: 375px;
 #pop-up-background{
 overflow: visible;
 top: 0;
-position: absolute;
+position: fixed;
 width: 100%;
 height: 100%;
 z-index: 4;

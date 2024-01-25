@@ -99,7 +99,7 @@ app.get("/user/dashboard/get-data-usage", function(req,res){
         arr+="'"+result[0].mac+"'"
         for(let i=1;i<result.length;i++) arr+=",'"+result[i].mac+"'"
         console.log(arr)
-        pfcon.query("SELECT * FROM bandwidth_accounting WHERE mac IN ("+arr+")", function(err, result){
+        pfcon.query("SELECT * FROM bandwidth_accounting WHERE mac IN ("+arr+"); SELECT * FROM bandwidth_accounting_history WHERE mac IN ("+arr+");", [1,2], function(err, result){
           if(err){
             console.log(err)
             res.sendStatus(500)
