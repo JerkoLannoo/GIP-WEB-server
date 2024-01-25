@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.min.css">
+    <link rel="stylesheet" href="/dashboard.css">
+    <title>GIP Jerko | Dashboard</title>
+</head>
+<body >
+
+    <div id="topnav">
+        <button onclick="showTab(document.getElementById('history'), this);" style="background-color:#4294ff" class="selection-buttons">Geschiedenis</button>
+        <button onclick="showTab(document.getElementById('nieuw'), this)" class="selection-buttons">Nieuw</button>
+        <button onclick="showTab(document.getElementById('saldo'),this)" class="selection-buttons">Saldo</button>
+    </div>
+    
+    <div id="main">
+        <div id="info-pop-up" style="display: block;">
+            <br>
+            <section id="history-data"></section>
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="info-pop-up-spinner"></i>
+            <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn">Sluiten</button>
+            <br><br>
+        </div>
+        <div  id="pop-up"  style="display: none;"  >
+            <section style="width: 100%; background-color: lightgray; height: 25px; position: absolute;"><!--dit is een section omdat js alle divs in het begin verwijdert-->
+                <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
+                <i class="fa-solid fa-xmark" onclick="document.getElementById('pop-up').style.display='none';document.getElementById('pop-up-background').style.display='none';" style="color: black; right: 5px; top: 5px; position: absolute;" id="pop-up-close"></i>
+            </section>
+            <br>
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="pop-up-spinner"></i>
+            <p id="pop-up-info"></p> 
+            <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn">Sluiten</button>
+            <br><br>
+        </div>
+
+        <div id="pop-up-background" style="display: none;" >
+        </div>
+        <div id="nieuw">
+            <section style="display: block; position: absolute; background-color: gray; width: 100%;">
+                <a class="selection-buttons" style="background-color: #4294ff;" onclick="switchNew(this)">Tijd</a>
+                <a class="selection-buttons" onclick="switchNew(this)">Data</a>
+            </section>
+            <br>
+            <br>
+            <h3>Nieuw aanmaken</h3>
+            <hr>
+            <section id="time-new" class="history-subContainer">
+                <table id="new-table" >
+                    <thead>
+                            <th>Optie</th>
+                            <th>Waarde</th>
+                            <th>Prijs (€)</th>
+                       
+                    </thead>
+                    <tbody class="new-table-body">
+                        <tr>
+                            <td class="option-column">Activatie datum: </td>
+                            <td class="option-column"><input type="date" id="activation-date" required></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Duratie: </td>
+                            <td class="option-column">
+                                <input type="number" value="1" name="" id="duration" value="0" min="1" max="30" onchange="calcPrice(document.getElementById('devices'), document.getElementById('normal-price'), 'n')">&ensp;
+                                <select name="" id="normal-duration-select" onchange="calcPrice(document.getElementById('devices'), document.getElementById('normal-price'), 'n')">
+                                <option value="1">Uur</option>
+                                <option value="24">Dag(en)</option>
+                                <option value="720">Maand(en)</option>
+                            </select>
+                        </td>
+                        <td id="duration-price">-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Aantal apparaten: </td>
+                            <td class="option-column"><input type="number" name="" id="devices" min="0" max="50" step="1" value="0" onchange="calcPrice(this, document.getElementById('normal-price'), 'n')"></td>
+                            <td id="device-price">-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column" colspan="2">Prijs:</td>
+                            <td  id="normal-price">0</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Duratie gast apparaten: </td>
+                            <td class="option-column">
+                                <input type="number" value="1" name="" id="g-duration" value="0" min="1" max="30" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')">&ensp;
+                                <select name="" id="g-duration-select" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')">
+                                <option value="1">Uur</option>
+                                <option value="24">Dag(en)</option>
+                                <option value="720">Maand(en)</option>
+                            </select>
+                        </td>
+                        <td id="g-duration-price">-</td> 
+                        </tr>
+    
+                        <tr>
+                            <td class="option-column">Aantal gast apparaten: </td>
+                            <td class="option-column"><input type="number" name="" id="g-devices" min="0" max="50" step="1" value="0" onchange="calcPrice(this, document.getElementById('g-price'), 'g')"></td>
+                            <td id="g-device-price">-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column" colspan="2">Prijs:</td>
+                            <td  id="g-price">0</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Adblocker?*</td>
+                            <td class="option-column"><label for="adblockj">Ja</label><input type="radio" name="adblock" id="adblockj"><label for="adblockn">Nee</label><input type="radio" name="adblock" id="adblockn" checked></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="option-column"><b>Totaal: </b></td>
+                            <td><b id="total-price">0</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section id="data-new" class="history-subContainer" style="display: none;">
+                <table id="new-table" style="width: 100%;">
+                    <thead>
+                            <th>Optie</th>
+                            <th>Waarde</th>
+                            <th>Prijs (€)</th>
+                       
+                    </thead>
+                    <tbody class="new-table-body">
+                        <tr>
+                            <td class="option-column">Activatie datum: </td>
+                            <td class="option-column"><input type="date" id="data-activation-date" required></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Data: </td>
+                            <td class="option-column">
+                                <select name="" id="normal-data-select" onchange="calcPrice(document.getElementById('data-devices'), document.getElementById('data-normal-price'), 'n')">
+                                <option value="5">5GB</option>
+                                <option value="10">10GB</option>
+                                <option value="15">15GB</option>
+                            </select>
+                        </td>
+                        <td id="data-price">-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Aantal apparaten: </td>
+                            <td class="option-column"><input type="number" name="" id="data-devices" min="0" max="50" step="1" value="0" onchange="calcPrice(this, document.getElementById('data-normal-price'), 'n')"></td>
+                            <td id="device-price">-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column" colspan="2">Prijs:</td>
+                            <td  id="data-normal-price">0</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Data gast apparaten: </td>
+                            <td class="option-column">
+                                <select name="" id="g-data-select" onchange="calcPrice(document.getElementById('data-g-devices'), document.getElementById('data-g-price'), 'g')">
+                                <option value="5">5GB</option>
+                                <option value="10">10GB</option>
+                                <option value="15">15GB</option>
+                            </select>
+                        </td>
+                        <td id="g-data-price">-</td> 
+                        </tr>
+    
+                        <tr>
+                            <td class="option-column">Aantal gast apparaten: </td>
+                            <td class="option-column"><input type="number" name="" id="data-g-devices" min="0" max="50" step="1" value="0" onchange="calcPrice(this, document.getElementById('data-g-price'), 'g')"></td>
+                            <td id="g-device-price">-</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column" colspan="2">Prijs:</td>
+                            <td  id="data-g-price">0</td>
+                        </tr>
+                        <tr>
+                            <td class="option-column">Adblocker?*</td>
+                            <td class="option-column"><label for="data-adblockj">Ja</label><input type="radio" name="data-adblock" id="data-adblockj"><label for="data-adblockn">Nee</label><input type="radio" name="data-adblock" id="data-adblockn" checked></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="option-column"><b>Totaal: </b></td>
+                            <td><b id="data-total-price">0</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <br>
+            <br>
+            <button onclick="setCreationType()">Aanmaken</button>
+        </div>
+        
+        <div id="history" style="display: inline-block;">
+            <i onclick="showHistroyKeuzemenu(document.getElementById('history-keuzemenu'))" class="fa-solid fa-bars" style="margin-left: 15px; top: 50px; position: absolute; cursor: pointer; display: none;" id="keuzemenu-bar"></i>
+            <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray; width: 200px;" id="history-keuzemenu">
+                <p style="color: gray; cursor: pointer; margin-top: 30px;" onclick="switchToSubTab('history-beurten', 'data-usage')">Beurten</p>
+                <p style="color: gray; cursor: pointer; margin-top: 20px;" onclick="switchToSubTab('data-usage', 'history-beurten')">Verbruik</p>
+            </section>
+            <section id="history-beurten" class="history-subContainer">
+                <h3 style="text-align: center !important;">Geschiedenis</h3>
+                <p style="color: red;" id="info"></p>
+              <span>Filters:&emsp;
+                <input type="checkbox" name="showOnlyValid" id="showOnlyValid" onchange="sort()" checked>
+                <label for="showOnlyValid">Toon alleen geldig</label>
+                &emsp;
+                <label for="sortType">Type:</label>
+                <select name="" id="sortType" onchange="sort()">
+                    <option value="">Beide</option>
+                    <option value="0">Privé</option>
+                    <option value="1">Gast</option>
+                </select>&emsp;&emsp;
+                <label for="dateFilter">Datum</label>
+                <input type="date" name="" id="dateFilter" onchange="sort()">
+                <select name="" id="dateTypeFilter" onchange="sort()" >
+                    <option value="creationDate">Aanmaak datum</option>
+                    <option value="activeDate">Activatie datum</option>
+                    <option value="loginDate">Login datum</option>
+                </select>
+              </span>
+                <hr>
+                <table id="history-table" class="info-tables">
+                    <thead>
+                            <th>Activatie datum</th>
+                            <th>Duratief</th>
+                            <th>Type</th>
+                    </thead>
+                    <tbody id="history-table-body"></tbody>
+                </table>
+                <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; margin-bottom: 35px; display: none;" id="loading-spinner"></i>
+            </section>
+            <section id="data-usage" class="history-subContainer" style="display: none; min-width: 750px">
+                <h3>Data Verbruik</h3>
+                <p>Data verbruik per apparaat (MAC adres). </p><p>Voor data verbruik per beurt, ga naar 'Beurten' en selecteer een beurt uit de tabel. </p>
+                <table class="info-tables">
+                    <thead>
+                        <th>Apparaatnaam</th>
+                        <th>MAC adres</th>
+                        <th class="data-usage-mobileHide">Upload</th>
+                        <th class="data-usage-mobileHide">Download</th>
+                        <th>Totaal</th>
+                    </thead>
+                    <tbody id="data-usage-table-body">
+
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <div id="saldo">
+            <h3>Saldo</h3>
+            <p id="saldo-info" style="color: red;"></p>
+            <hr>
+            <b><span>Beschikbaar saldo: </span><span id="saldo-total"></span></b>
+            <br>
+            <br>
+            <label for="new-saldo">Saldo in EUR: </label>
+            <input type="number" id="new-saldo">
+            <br>
+            <br>
+            <button onclick="setSaldo()">Saldo toevoegen</button>
+        </div>
+    </div>
+    <script src="/dashboard.js"></script>
+</body>

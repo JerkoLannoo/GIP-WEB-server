@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.min.css">
+    <link rel="stylesheet" href="/login.css">
+    <title>GIP Jerko | Login</title>
+</head>
+<body>
+
+    <div id="topnav">
+        <a href="/login" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Login</a>
+        <a href="/" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Registreer</a>
+    </div>
+    <div id="main">
+        <div  id="pop-up" <%if(status==0){%> style="display: none;" <%}%>  >
+            <div style="width: 100%; background-color: lightgray; height: 25px; position: absolute;">
+                <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
+                <i class="fa-solid fa-xmark" onclick="document.getElementById('pop-up').style.display='none';document.getElementById('pop-up-background').style.display='none';" style="color: black; right: 5px; top: 5px; position: absolute;" id="pop-up-close"></i>
+            </div>
+            <br>
+           
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="pop-up-spinner"></i>
+            <%if(status==1){%><p id="pop-up-info">Dit is een test</p> <%}%>  
+            <%if(status==2){%><p style="color: red;" id="pop-up-info">Deze link is niet (meer) geldig.</p> <%}%>  
+            <%if(status==3){%><p style="color: green;" id="pop-up-info">Je kan je nu inloggen.</p> <%}%> 
+            <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn">Sluiten</button>
+            <br><br>
+        </div>
+        <div id="pop-up-background"  <%if(status==0){%> style="display: none;" <%}%> >
+        </div>
+        <form action="/login/send-data" id="login-form" method="post">
+            <p style="font-weight: bold; color: red;"><%-fout%></p>
+            <label for="email">E-mail adres: </label>
+            <input type="email" name="email" id="email" required >
+            <br><br>
+            <label for="wachtwoord">Wi-Fi Wachtwoord: </label>
+            <input type="password" name="password" id="wachtwoord" minlength="8" maxlength="15" required >
+            <br><br>
+            <button type="submit">Log in</button>
+        </form>
+    </div>
+
+</body>

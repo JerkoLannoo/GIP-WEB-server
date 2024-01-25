@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.min.css">
+    <link rel="stylesheet" href="/home.css">
+    <title>GIP Jerko | Home</title>
+</head>
+<body>
+    <input type="hidden" name="" id="bcode-input" value="<%-bcode%>">
+    <input type="hidden" name="" id="code-input" value="">
+    <div id="topnav">
+        <a href="/login" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Login</a>
+        <a href="" <%if(status==1){%> style="pointer-events: none; background-color: gray;" <%}%> >Registreer</a>
+    </div>
+    <div id="main">
+        <h1>GIP Jerko</h1>
+        <h3>Hét systeem voor Wi-Fi op school.</h3>
+        <div  id="pop-up"  <%if(status==0){%> style="display: none;" <%}%> >
+            <div style="width: 100%; background-color: lightgray; height: 25px; position: absolute;">
+                <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
+                <i class="fa-solid fa-xmark" onclick="document.getElementById('pop-up').style.display='none';document.getElementById('pop-up-background').style.display='none';" style="color: black; right: 5px; top: 5px; position: absolute;" id="pop-up-close"></i>
+            </div>
+            <br>
+           
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="pop-up-spinner"></i>
+            <%if(status==0){%><p id="pop-up-info"></p> <%}%>  
+            <%if(status==2){%><p style="color: red;" id="pop-up-info">Deze QR-code is niet (meer) geldig.</p> <%}%>  
+            <%if(status==1){%><p style="color: green;" id="pop-up-info">Scannen geslaagd! Vul nu de rest van de gegevens in.</p> <%}%> 
+            <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn"><%-popupbtntext%></button>
+            <br><br>
+        </div>
+        <div id="pop-up-background"  <%if(status==0){%> style="display: none;" <%}%>>
+        </div>
+      
+        <div id="options">
+            <div class="optiondiv">
+                <h3 style="text-align: center;">Registreer via terminal</h3>
+                <p class="extra-info-label">Werking verzekerd</p>
+                <%if(status!=1){%>
+                <p>Ga naar een terminal en scan je leerlingenkaart.
+                    Klik op <b>"Registreren via terminal"</b>, er zal nu 
+                    een 4 cijferige code tevoorschijn komen.
+                    Vul deze code hieronder in:
+                </p>
+                <label for="terminal-code" >Code:</label>
+                <input minlength="4" onkeyup="enableControlBtn(this)" oninput="this.value = this.value.toUpperCase()" type="text" name="pin" maxlength="4" id="terminal-code" style="width: 5ch;"  >
+                <br>
+                <p id="check-code-info" style="color: red; display: none;">Deze code is niet geldig.</p>
+                <br>
+                <button onclick="checkCode()" id="terminal-control-btn" disabled>Controleer code</button>
+                <br>
+                <br>
+                <hr>
+                <div id="terminal-rest-div">
+                    <p style="color: red;" id="terminal-rest-info">Je kan deze velden pas invullen als je een (geldige) code hebt ingegeven.</p>
+                    <label for="username">Voornaam+Naam: </label>
+                    <input onkeyup="CheckIfFilledIn(this)"  disabled type="text" name="username" id="username" maxlength="50">
+                    <br>
+                    <br>
+                    <label for="email">E-mail addres: </label>
+                    <input onkeyup="CheckIfFilledIn(this)"  disabled type="email" name="email" id="email">
+                    <br><br>
+                    <label for="terminal-password">Wi-Fi wachtwoord*: </label>
+                    <input disabled onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
+                    <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
+                    <label  for="terminal-pin">PIN-code*: </label>
+                    <input onkeyup="CheckIfFilledIn(this)"  disabled type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
+                    <p>*Deze PIN-code zal je nodig hebben als je wil inloggen op een terminal. Vergeet deze dus niet!</p>
+                    <button disabled id="terminal-register-btn" onclick="postRegistrationInfo(this.parentElement, true)">Registreer</button>
+                </div>
+                <br><br>
+               <%}else{%>
+                <p style="color: red;">Vul de onderstaande velden in.</p>
+                <label for="username">Voornaam+Naam: </label>
+                <input  onkeyup="CheckIfFilledIn(this)" type="text" name="username" id="username" maxlength="50">
+                <br>
+                <br>
+                <label for="email">E-mail addres: </label>
+                <input  onkeyup="CheckIfFilledIn(this)" type="email" name="email" id="email">
+                <br><br>
+                <label for="terminal-pin">PIN-code*: </label>
+                <input  onkeyup="CheckIfFilledIn(this)" type="password" name="pin" pattern="[0-9]{4}" maxlength="4" id="terminal-pin" style="width: 4ch;">
+                <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
+                <label for="terminal-password">Wi-Fi wachtwoord*: </label>
+                <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 16ch;">
+                <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
+                <button onclick="postRegistrationInfo(this.parentElement, true)">Registreer</button>
+                <br><br>
+                <%}%>
+           
+              
+            
+            
+            </div>
+            <%if(status!=1){%>
+            <div class="optiondiv">
+                <h3 style="text-align: center;">Registreer online</h3>
+                <p class="extra-info-label">Snelst</p>
+                <div id="online-input-div">
+                    <br>
+                    <label for="online-bcode-input">Code leerlingenkaart: </label>
+                    <input type="text" pattern="[0-9]{5}" name="bcode" id="online-bcode-input" maxlength="5">
+                    <br>
+                    <br>
+                    <label for="online-username">Voornaam+Naam: </label>
+                    <input type="text" name="username" id="online-username" maxlength="50">
+                    <br>
+                    <br>
+                    <label for="online-email">E-mail addres: </label>
+                    <input type="email" name="email" id="online-email" maxlength="50">
+                    <br>
+                    <br>
+                    <label for="online-password">Wachtwoord*: </label>
+                    <input type="password" name="password" id="online-password" minlength="8" maxlength="50" style="width: 16ch;" >
+                    <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
+                    <label for="online-pin">PIN-code: </label>
+                    <input type="password" id="online-pin" name="pin" pattern="[0-9]{4}" maxlength="4" style="width: 5ch;" >
+                    <P>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</P>
+                    <button onclick="postRegistrationInfo(this.parentElement, false)">Registreer</button>
+                </div>
+              
+            </div>
+            <div class="optiondiv">
+                <h3 style="text-align: center;">Login op terminal via smartphone</h3>
+                <p class="extra-info-label">Zonder leerlingenkaart</p>
+                <p>features: Guest device</p>
+            </div>
+            <%}%>
+        </div>
+    </div>
+    <script>
+        const searchParams = new URL(document.location).searchParams;
+        if(searchParams.get("code")!=null){
+            document.getElementById("code-input").value = searchParams.get("code")
+        }
+        console.log(searchParams.get("code"))
+        var filledIn = true;
+        var codeInput = document.getElementById("terminal-code")
+        var fillDiv=document.getElementsByClassName("optiondiv")[0]
+        var popup = document.getElementById("pop-up")
+        var popupBackground=document.getElementById("pop-up-background")
+        var popupInfo=document.getElementById("pop-up-info")
+        var popupBtn = document.getElementById("pop-up-btn")
+
+        function postRegistrationInfo(parent, useInputBarcode){
+            return new Promise((resolve, reject)=>{
+                for(let i=0;i<parent.querySelectorAll("input").length;i++) {
+                console.log("checking if filled in, "+parent.querySelectorAll("input")[i].value)
+                if(parent.querySelectorAll("input")[i].value===""||!parent.querySelectorAll("input")[i].checkValidity()){
+                    console.log("not filled in")
+                    reject(i)
+                    return
+                }
+                else if(i===parent.querySelectorAll("input").length-1) resolve()
+            }
+                
+            }).then(resolve=>{
+                console.log("resolved, bcode: "+document.getElementById("bcode-input").value)
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.innerText="Wacht even..."
+                popupBtn.style.display="none"
+                document.getElementById("pop-up-spinner").style.display="block"
+                let bcode="";
+                let email=""
+                if(useInputBarcode) {//via terminak
+                    bcode = document.getElementById("bcode-input").value;
+                    email=document.getElementById("email").value
+                    data= 'bcode='+bcode+'&'+
+                'email='+email+'&'+
+                'pin='+document.getElementById("terminal-pin").value+'&'+
+                'password='+document.getElementById("terminal-password").value+'&'+
+                'username='+document.getElementById("username").value
+                }  
+                else {//enkel online
+                    bcode= document.getElementById("online-bcode-input").value
+                    email=document.getElementById("online-email").value
+                    data= 'bcode='+bcode+'&'+
+                'email='+email+'&'+
+                'pin='+document.getElementById("online-pin").value+'&'+
+                'password='+document.getElementById("online-password").value+'&'+
+                'code='+document.getElementById("code-input").value+'&'+
+                'username='+document.getElementById("online-username").value
+                } 
+                console.log(email)
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/register/remote-login/send-data", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                        document.getElementById("pop-up-close").style.display="none"
+                popupInfo.style.color="black"
+                popupInfo.innerText="Er is een mail verzonden naar "+email+".\nU mag dit venster sluiten."
+                popupBtn.style.display="none"
+                    }
+                    else{
+                        popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                };
+            }).catch(reject=>{
+                console.log(reject)
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.style.color="red"
+                popupInfo.innerText="Vul alle velden in!"
+                popupBtn.innerText="Sluiten"
+            })
+        }
+        function CheckIfFilledIn(el){
+            if(el.value!==""&&el.checkValidity()){
+                el.style.borderBottom="2px solid green"
+            }
+            else{
+                el.style.borderBottom="2px solid red"
+            }
+        }
+        function enableControlBtn(el){
+            if(el.value.length==4){
+                el.style.borderBottom="2px solid green"
+                document.getElementById("terminal-control-btn").disabled = false
+            }
+            else{
+                el.style.borderBottom="2px solid red"
+                document.getElementById("terminal-control-btn").disabled = true
+            }
+        }
+        function checkCode(){
+            if(codeInput.value.length){
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/register/check-code", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                data= 'code='+codeInput.value
+                document.getElementById("code-input").value=codeInput.value
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 && JSON.parse(xhr.response).success) {
+                    let response = JSON.parse(xhr.response)
+                    console.log(response.success)
+                    console.log(response.bcode)
+                    document.getElementById("terminal-code").disabled=true
+                    document.getElementById("terminal-control-btn").disabled=true
+                    document.getElementById("bcode-input").value=response.bcode
+                    document.getElementById("check-code-info").style.display="none"
+                    document.getElementById("terminal-rest-info").style.color="green"
+                    document.getElementById("terminal-rest-info").innerText="Vul de onderstaande velden in."
+                    document.getElementById("terminal-register-btn").disabled=false
+                    for(let i=0;i<document.getElementById("terminal-rest-div").querySelectorAll("input").length;i++) {
+                        console.log("ok")
+                        document.getElementById("terminal-rest-div").querySelectorAll("input")[i].disabled=false
+                  } 
+                }
+                else{
+                document.getElementById("check-code-info").style.display="block"
+                document.getElementById("check-code-info").innerText="Ongeldige code."
+                }
+                };
+            }
+            else {
+                document.getElementById("check-code-info").style.display="block"
+                document.getElementById("check-code-info").innerText="Geef een code in."
+            } 
+
+        }
+    </script>
+</body>
