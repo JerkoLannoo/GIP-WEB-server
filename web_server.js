@@ -93,7 +93,7 @@ app.get("/user/dashboard/get-data-usage", function(req,res){
         console.log(err)
         res.sendStatus(500)
       }
-      else{
+      else if(result.length){
         var devices=result
         let arr =""
         arr+="'"+result[0].mac+"'"
@@ -109,6 +109,7 @@ app.get("/user/dashboard/get-data-usage", function(req,res){
           }
         })
       }
+      else res.send([[[],[]],[]])//lege array als er niks is
     })
   }
 })
@@ -132,34 +133,44 @@ app.get("/register/remote-registration", function(req,res){
 })
 app.post("/register/remote-login/send-data", function(req,res){
   let data=req.body
-  //PASSWORD functie toevoegen voor PIN en password
   let str="bcdfghjklmpqrstvwxyz0123456789BCDFGHJKLMPQRSTVWXZ"
   let code=""
+  console.log("tries: "+req.session.tries)
+  if(req.session.tries==null||isNaN(req.session.tries)) req.session.tries = 0
+  console.log("tries: "+req.session.tries)
   for(let i=0; i<50;i++) code+=str.charAt(Math.random()*str.length)
-  con.query("SELECT * FROM verify WHERE email="+JSON.stringify(data.email)+"; SELECT * FROM users WHERE email="+JSON.stringify(data.email)+" OR bcode="+data.bcode+" OR username='"+data.username+"'", [1,2], function(err, result){
-    if(err) console.log(err)
-    else if(result[0].length) res.send({success:false, msg: "Je hebt al een e-mail gekregen."})
-    else if(result[1].length) res.send({success:false, msg: "Je bent al een gebruiker."})
-    else{
-      con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(data.username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
-        if(err) {
-          console.log(err)
-          res.sendStatus(500)
-        } 
-        else {
-          //verzend hier email
-          //verzend hier naar terminal server
-          mail.mail(data.email, data.username, code, data.bcode)
-          if(data.code!=="") postToTerminalServer(data.code, "/register/terminal/send-status");
-          res.send({success:true})
-        }
-      })
+  if(req.session.tries<2){
+    con.query("SELECT * FROM verify WHERE email="+JSON.stringify(data.email)+"; SELECT * FROM users WHERE email="+JSON.stringify(data.email)+" OR bcode="+data.bcode+" OR username='"+data.username+"'", [1,2], function(err, result){
+      if(err) {
+        console.log(err)
+        res.send(400)
+      } 
+      else if(result[0].length) res.send({success:false, msg: "Je hebt al een e-mail gekregen."})
+      else if(result[1].length) res.send({success:false, msg: "Je bent al een gebruiker."})
+      else{
+        con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(data.username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
+          if(err) {
+            console.log(err)
+            res.sendStatus(500)
+          } 
+          else {
+            //verzend hier email
+            //verzend hier naar terminal server
+              req.session.tries++
+              mail.mail(data.email, data.username, code, data.bcode)
+              if(data.code!=="") postToTerminalServer(data.code, "/register/terminal/send-status");
+              res.send({success:true})
+          }
+        })
+    }
+    })
   }
-  })
-
+  else res.send({success: false, msg: "Te veel registratie pogingen."})
 })
 app.get("/register/verify-email", function(req,res){
   con.query("SELECT * FROM verify WHERE BINARY code="+JSON.stringify(req.query.code)+" AND email="+JSON.stringify(req.query.email), function(err, result){
+    console.log(result)
+    console.log("verify len: "+result.length)
     if(err) {
       console.log(err)
       res.send("Er ging iets mis.")
@@ -174,11 +185,11 @@ app.get("/register/verify-email", function(req,res){
           res.render(__dirname+"/login.ejs", {status:3, fout:""})
         }
       })
-      con.query("DELETE FROM verify WHERE code="+JSON.stringify(req.query.code), function(err){
+     /* con.query("DELETE FROM verify WHERE code="+JSON.stringify(req.query.code), function(err){ //web omdat de bots van microsoft deze link openen om te checken of het geen phishing is
         if (err) {
           console.log(err)
         }
-      })
+      })*/
     }
     else{
       setTimeout(() => {

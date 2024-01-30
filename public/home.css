@@ -85,6 +85,7 @@ margin-left: -3px;
     border: none;
     border-radius: 0px !important;
     border-bottom: 2px solid gray;
+    background-color: #e8f1fc;
 }
 .optiondiv input:focus{
 border-bottom:2px solid #036ffc;
@@ -156,6 +157,9 @@ opacity: 50%;
     
 }
 @media only screen and (max-device-width: 1000px)  {
+#pop-up {
+    position: fixed;
+}
 #main{
     overflow-y: visible;
     width: 100%;

@@ -257,15 +257,13 @@ function createNewData(){
     popupInfo.innerText="Wacht even..."
     popupBtn.innerText="Sluiten"
     let adblock=false;
-    if(document.getElementById("adblockj").checked) adblock=true;
+    if(document.getElementById("data-adblockj").checked) adblock=true;
     let data= "adblock="+adblock+"&"+
     'activationDate='+new Date(document.getElementById("data-activation-date").value).getTime()+'&'+
     'data='+document.getElementById("normal-data-select").value+'&'+
     'devices='+document.getElementById("data-devices").value+'&'+
     'gData='+document.getElementById("g-data-select").value+'&'+
     'gDevices='+document.getElementById("data-g-devices").value+'&'
-   if(document.getElementById("adblockj").checked) data+='adblocker='+true
-   else data+='adblocker='+false
 //       console.log(data)
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/user/dashboard/create-new-data", true);
@@ -293,6 +291,7 @@ function createNewData(){
     popupBtn.innerText="Sluiten"
     }
     };
+    getSaldo()
 }
 function createNewTime(){
         document.getElementById("pop-up-spinner").style.display="block"
@@ -309,8 +308,6 @@ function createNewTime(){
         'devices='+document.getElementById("devices").value+'&'+
         'gDuration='+document.getElementById("g-duration").value*document.getElementById("g-duration-select").value+'&'+
         'gDevices='+document.getElementById("g-devices").value+'&'
-       if(document.getElementById("adblockj").checked) data+='adblocker='+true
-       else data+='adblocker='+false
 //       console.log(data)
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "/user/dashboard/create-new-time", true);
@@ -338,6 +335,7 @@ function createNewTime(){
         popupBtn.innerText="Sluiten"
         }
         };
+        getSaldo()
 }
 function formatDate(date){
     if(date!=null)
@@ -463,13 +461,12 @@ function getVerbruik(){
         createVerbruikTable(data)
     })
 }
-function createVerbruikTable(data){
+function createVerbruikTable(data){//data[0][0]=bandwidth accounting; data[0][1] = bandwidth accounting history
     let temp=[]
     for(let i =0;i<data[1].length;i++){
-        for(let y=0;y<data[0].length;y++){
-            if(data[1][i].mac === data[0][y].mac) verbruik.push({computernaam: data[1][i].computername, mac: data[1][i].mac, upload: data[0][y].in_bytes, download: data[0][y].out_bytes, totaal: data[0][y].total_bytes})
+        for(let y=0;y<data[0][0].length;y++) if(data[1][i].mac === data[0][0][y].mac) verbruik.push({computernaam: data[1][i].computername, mac: data[1][i].mac, upload: data[0][0][y].in_bytes, download: data[0][0][y].out_bytes, totaal: data[0][0][y].total_bytes})
+        for(let y=0;y<data[0][1].length;y++) if(data[1][i].mac === data[0][1][y].mac) verbruik.push({computernaam: data[1][i].computername, mac: data[1][i].mac, upload: data[0][1][y].in_bytes, download: data[0][1][y].out_bytes, totaal: data[0][1][y].total_bytes})
         }
-    }
     let mac = []
     console.log(verbruik)
     for(let i=0;i<verbruik.length;i++){//verbruik vereenvoudigen: duplicate mac adressen verwijderen 
@@ -490,6 +487,7 @@ function createVerbruikTable(data){
         }
     }
     console.log(eenvoudigVerbruik)
+    if(!eenvoudigVerbruik.length) document.getElementById("data-info").innerText = "Geen verbruik om te zien."
     let table = document.getElementById("data-usage-table-body")
     for(let i=0;i<eenvoudigVerbruik.length;i++){
         let rij = document.createElement("tr")
