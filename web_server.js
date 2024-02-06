@@ -148,7 +148,10 @@ app.post("/register/remote-login/send-data", function(req,res){
       else if(result[0].length) res.send({success:false, msg: "Je hebt al een e-mail gekregen."})
       else if(result[1].length) res.send({success:false, msg: "Je bent al een gebruiker."})
       else{
-        con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(data.username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
+        let username = data.email.substring(0,data.email.indexOf("@"))
+        console.log(username)
+        username = username.split(".")[0] +" " + username.split(".")[1]
+        con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
           if(err) {
             console.log(err)
             res.sendStatus(500)
@@ -157,7 +160,7 @@ app.post("/register/remote-login/send-data", function(req,res){
             //verzend hier email
             //verzend hier naar terminal server
               req.session.tries++
-              mail.mail(data.email, data.username, code, data.bcode)
+              mail.mail(data.email, username, code, data.bcode)
               if(data.code!=="") postToTerminalServer(data.code, "/register/terminal/send-status");
               res.send({success:true})
           }

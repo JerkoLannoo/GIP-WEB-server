@@ -54,10 +54,6 @@
                 <hr>
                 <div id="terminal-rest-div">
                     <p style="color: red;" id="terminal-rest-info">Je kan deze velden pas invullen als je een (geldige) code hebt ingegeven.</p>
-                    <label for="username">Voornaam+Naam: </label>
-                    <input onkeyup="CheckIfFilledIn(this)"  disabled type="text" name="username" id="username" maxlength="50">
-                    <br>
-                    <br>
                     <label for="email">E-mail addres: </label>
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="email" name="email" id="email">
                     <br><br>
@@ -72,10 +68,6 @@
                 <br><br>
                <%}else{%>
                 <p style="color: red;">Vul de onderstaande velden in.</p>
-                <label for="username">Voornaam+Naam: </label>
-                <input  onkeyup="CheckIfFilledIn(this)" type="text" name="username" id="username" maxlength="50">
-                <br>
-                <br>
                 <label for="email">E-mail addres: </label>
                 <input  onkeyup="CheckIfFilledIn(this)" type="email" name="email" id="email">
                 <br><br>
@@ -101,10 +93,6 @@
                     <br>
                     <label for="online-bcode-input">Code leerlingenkaart: </label>
                     <input type="text" pattern="[0-9]{5}" name="bcode" id="online-bcode-input" maxlength="5">
-                    <br>
-                    <br>
-                    <label for="online-username">Voornaam+Naam: </label>
-                    <input type="text" name="username" id="online-username" maxlength="50">
                     <br>
                     <br>
                     <label for="online-email">E-mail addres: </label>
@@ -170,8 +158,7 @@
                     data= 'bcode='+bcode+'&'+
                 'email='+email+'&'+
                 'pin='+document.getElementById("terminal-pin").value+'&'+
-                'password='+document.getElementById("terminal-password").value+'&'+
-                'username='+document.getElementById("username").value
+                'password='+document.getElementById("terminal-password").value
                 }  
                 else {//enkel online
                     bcode= document.getElementById("online-bcode-input").value
@@ -180,8 +167,7 @@
                 'email='+email+'&'+
                 'pin='+document.getElementById("online-pin").value+'&'+
                 'password='+document.getElementById("online-password").value+'&'+
-                'code='+document.getElementById("code-input").value+'&'+
-                'username='+document.getElementById("online-username").value
+                'code='+document.getElementById("code-input").value
                 } 
                 console.log(email)
                 const xhr = new XMLHttpRequest();
