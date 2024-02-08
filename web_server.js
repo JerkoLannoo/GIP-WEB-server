@@ -53,6 +53,16 @@ setInterval(() => {
     else console.log("SELECT 1")
   });
 }, 3600000);
+setInterval(() => {
+  con.query("DELETE FROM verify WHERE time=1;", function (err, rows) {
+    if (err) console.log(err);
+    else console.log("DELETED "+rows+" from verify")
+  });
+  con.query("UPDATE verify SET time=1;", function (err, rows) {
+    if (err) console.log(err);
+    else console.log("UPDATED "+rows+" from verify")
+  });
+}, 60*15*1000);//15 minuten voor je opnieuw een mail kan krijgen.
 function postToTerminalServer(code, path){
   var options = {
     host: '127.0.0.1',
@@ -149,22 +159,28 @@ app.post("/register/remote-login/send-data", function(req,res){
       else if(result[1].length) res.send({success:false, msg: "Je bent al een gebruiker."})
       else{
         let username = data.email.substring(0,data.email.indexOf("@"))
-        console.log(username)
-        username = username.split(".")[0] +" " + username.split(".")[1]
-        con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
-          if(err) {
-            console.log(err)
-            res.sendStatus(500)
-          } 
-          else {
-            //verzend hier email
-            //verzend hier naar terminal server
-              req.session.tries++
-              mail.mail(data.email, username, code, data.bcode)
-              if(data.code!=="") postToTerminalServer(data.code, "/register/terminal/send-status");
-              res.send({success:true})
-          }
-        })
+        let emailDomain = data.email.substring(data.email.indexOf("@"), data.email.length)
+        console.log("email domain: "+emailDomain)
+        if(emailDomain==="@sgsintpaulus.eu"){
+          console.log(username)
+          username = username.split(".")[0].substring(0,1).toUpperCase() + username.split(".")[0].substring(1,username.split(".")[0].length) +" " + username.split(".")[1].substring(0,1).toUpperCase() + username.split(".")[1].substring(1,username.split(".")[1].length)
+          console.log(username)
+          con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
+            if(err) {
+              console.log(err)
+              res.sendStatus(500)
+            } 
+            else {
+              //verzend hier email
+              //verzend hier naar terminal server
+                req.session.tries++
+                mail.mail(data.email, username, code, data.bcode)
+                if(data.code!=="") postToTerminalServer(data.code, "/register/terminal/send-status");
+                res.send({success:true})
+            }
+          })
+        }
+        else res.send({success: false, msg: "Dit is geen e-mail adres van Sint-Paulusschool."})
     }
     })
   }

@@ -29,6 +29,8 @@ function showTab(el, btn){
 function getHistory(){
     console.log("ok")
     document.getElementById("loading-spinner").style.display="block"
+    console.log(document.getElementsByClassName("history").length)
+    for(let i=document.getElementsByClassName("history").length-1;i>=0;i--) document.getElementsByClassName("history")[i].remove()
     fetch("/user/dashboard/get-history")
     .then(response=>response.json())
     .then(data=>{
@@ -292,6 +294,7 @@ function createNewData(){
     }
     };
     getSaldo()
+    getHistory()
 }
 function createNewTime(){
         document.getElementById("pop-up-spinner").style.display="block"
@@ -335,6 +338,7 @@ function createNewTime(){
         popupBtn.innerText="Sluiten"
         }
         };
+        getHistory()
         getSaldo()
 }
 function formatDate(date){
