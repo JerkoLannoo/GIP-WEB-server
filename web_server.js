@@ -253,7 +253,7 @@ app.post("/login/send-data", function(req,res){
   console.log(req.session.login)
   req.session.username=result[0].username
   req.session.email=result[0].email
-  req.session.password=result[0].password
+  req.session.password=result[0].password//kan misschien weg
     res.redirect("/user/dashboard")
   }
   else res.render(__dirname+"/login", {fout: "Onjuist e-mail adres of wachwoord.", status:0})
@@ -261,7 +261,7 @@ app.post("/login/send-data", function(req,res){
 })
 app.get("/user/dashboard", function(req,res){
   if(req.session.login){
-    res.render(__dirname+"/dashboard.ejs")
+    res.render(__dirname+"/dashboard.ejs", {username: req.session.username})
   }
   else res.redirect("/login")
 })
@@ -440,6 +440,25 @@ con.query("SELECT saldo FROM users WHERE email='"+req.session.email+"'", functio
 })
   }
   else res.sendStatus(401)
+})
+app.get("/user/logout", (req,res)=>{
+  req.session.login=false;
+  res.redirect("/")
+})
+app.get("/user/account", function(req,res){
+  if(req.session.login) 
+  {
+    con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email), function(err,result){
+      if(err){
+        console.log(err)
+        res.send("Er ging iets mis.")
+      }
+      else if(result.length){
+        res.render(__dirname+"/account.ejs", {username: req.session.username, email: req.session.email, bcode: result[0].bcode, saldo: result[0].saldo})
+      }
+    })
+  } 
+  else res.redirect("/login")
 })
 app.get("/", function(req,res){
   if(req.session.login)   res.redirect("/user/dashboard")

@@ -9,9 +9,11 @@
 <body >
 
     <div id="topnav">
-        <button onclick="showTab(document.getElementById('history'), this);" style="background-color:#4294ff" class="selection-buttons">Geschiedenis</button>
-        <button onclick="showTab(document.getElementById('nieuw'), this)" class="selection-buttons">Nieuw</button>
-        <button onclick="showTab(document.getElementById('saldo'),this)" class="selection-buttons">Saldo</button>
+        <a onclick="showTab(document.getElementById('history'), this);" style="background-color:#4294ff" class="selection-buttons"><i class="fa-solid fa-clock-rotate-left"></i> Geschiedenis</a>
+        <a onclick="showTab(document.getElementById('nieuw'), this)" class="selection-buttons"><i class="fa-solid fa-plus"></i> Nieuw</a>
+        <a onclick="showTab(document.getElementById('saldo'),this)" class="selection-buttons"><i class="fa-solid fa-credit-card fa-fw"></i> Saldo</a>
+        <a href="/user/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i> Log uit</a>
+        <a href="/user/account" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
     
     <div id="main">
@@ -37,15 +39,12 @@
         <div id="pop-up-background" style="display: none;" >
         </div>
         <div id="nieuw">
-            <section style="display: block; position: absolute; background-color: gray; width: 100%;">
-                <a class="selection-buttons" style="background-color: #4294ff;" onclick="switchNew(this)">Tijd</a>
-                <a class="selection-buttons" onclick="switchNew(this)">Data</a>
+            <section style="display: block; position: absolute; background-color: #036ffc; border-radius: 5px; margin-left: 110px; margin-top: 5px;">
+                <a class="selection-buttons" style="background-color: #4294ff;" onclick="switchNew(this)"><i class="fa-solid fa-clock"></i> Tijd</a>
+                <a class="selection-buttons" onclick="switchNew(this)"><i class="fa-solid fa-database"></i> Data</a>
             </section>
-            <br>
-            <br>
-            <h3>Nieuw aanmaken</h3>
-            <hr>
             <section id="time-new" class="history-subContainer">
+                <h3>Nieuw aanmaken</h3>
                 <table id="new-table" >
                     <thead>
                             <th>Optie</th>
@@ -115,6 +114,7 @@
                 </table>
             </section>
             <section id="data-new" class="history-subContainer" style="display: none;">
+                <h3>Nieuw aanmaken</h3>
                 <table id="new-table" style="width: 100%;">
                     <thead>
                             <th>Optie</th>
@@ -189,8 +189,8 @@
         <div id="history" style="display: inline-block;">
             <i onclick="showHistroyKeuzemenu(document.getElementById('history-keuzemenu'))" class="fa-solid fa-bars" style="margin-left: 15px; top: 50px; position: absolute; cursor: pointer; display: none;" id="keuzemenu-bar"></i>
             <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray; width: 200px;" id="history-keuzemenu">
-                <p style="color: gray; cursor: pointer; margin-top: 30px;" onclick="switchToSubTab('history-beurten', 'data-usage')">Beurten</p>
-                <p style="color: gray; cursor: pointer; margin-top: 20px;" onclick="switchToSubTab('data-usage', 'history-beurten')">Verbruik</p>
+                <p style="color: gray; cursor: pointer; margin-top: 30px; display: flex;" onclick="switchToSubTab('history-beurten', 'data-usage')"><i class="fa-solid fa-ticket fa-fw" style="padding: 0px 10px;"></i> Beurten</p>
+                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex;" onclick="switchToSubTab('data-usage', 'history-beurten')"><i class="fa-solid fa-database fa-fw" style="padding: 0px 10px;"></i> Verbruik</p>
             </section>
             <section id="history-beurten" class="history-subContainer">
                 <h3 style="text-align: center !important;">Geschiedenis</h3>

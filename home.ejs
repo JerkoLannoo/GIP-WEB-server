@@ -39,8 +39,8 @@
                 <p class="extra-info-label">Werking verzekerd</p>
                 <%if(status!=1){%>
                 <p>Ga naar een terminal en scan je leerlingenkaart.
-                    Klik op <b>"Registreren via terminal"</b>, er zal nu 
-                    een 4 cijferige code tevoorschijn komen.
+                    Klik in de pop-up op <b>'Ja'</b>, er zal nu 
+                    een 4-cijferige code tevoorschijn komen.
                     Vul deze code hieronder in:
                 </p>
                 <label for="terminal-code" >Code:</label>
@@ -59,7 +59,7 @@
                     <br><br>
                     <label for="terminal-password">Wi-Fi wachtwoord*: </label>
                     <input disabled onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 15ch;">
-                    <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
+                    <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in te loggen. Vergeet deze dus niet!</p>
                     <label  for="terminal-pin">PIN-code*: </label>
                     <input onkeyup="CheckIfFilledIn(this)"  disabled type="password" name="pin" pattern="[0-9]{4}" minlength="4" maxlength="4" id="terminal-pin" style="width: 4ch;">
                     <p>*Deze PIN-code zal je nodig hebben als je wil inloggen op een terminal. Vergeet deze dus niet!</p>
@@ -76,7 +76,7 @@
                 <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
                 <label for="terminal-password">Wi-Fi wachtwoord*: </label>
                 <input onkeyup="CheckIfFilledIn(this)" type="password" name="password" minlength="8" maxlength="15"  id="terminal-password" style="width: 16ch;">
-                <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</p>
+                <p>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in te loggen. Vergeet deze dus niet!</p>
                 <button onclick="postRegistrationInfo(this.parentElement, true)">Registreer</button>
                 <br><br>
                 <%}%>
@@ -104,15 +104,10 @@
                     <p>*Deze PIN-code zal je nodig hebben om je in te loggen op een terminal. Vergeet deze dus niet!</p>
                     <label for="online-pin">PIN-code: </label>
                     <input type="password" id="online-pin" name="pin" pattern="[0-9]{4}" maxlength="4" style="width: 5ch;" >
-                    <P>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in to loggen. Vergeet deze dus niet!</P>
+                    <P>*Dit wachtwoord zal je nodig hebben om je online en op de Wi-Fi in te loggen. Vergeet deze dus niet!</P>
                     <button onclick="postRegistrationInfo(this.parentElement, false)">Registreer</button>
                 </div>
               
-            </div>
-            <div class="optiondiv">
-                <h3 style="text-align: center;">Login op terminal via smartphone</h3>
-                <p class="extra-info-label">Zonder leerlingenkaart</p>
-                <p>features: Guest device</p>
             </div>
             <%}%>
         </div>

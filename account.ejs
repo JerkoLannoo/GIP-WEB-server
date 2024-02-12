@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<head>
+    <title>GIP Jerko | Account</title>
+    <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.min.css">
+</head>
+<body>
+    
+    <div id="topnav">
+        <a href="/user/dashboard" class="selection-buttons"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="/user/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i>Log uit</a>
+        <a href="" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
+    </div>
+    <div id="main">
+        <div class="account">
+            <h2>Account info</h2>
+            <br>
+            <br>
+            <p><span class="name-el">E-mail adres:</span><span class="value-el"><b><%-email%></b></span></p> 
+            <p><span class="name-el">Gebruikersnaam: </span><span class="value-el"><b><%-username%></b></span></p> 
+            <p><span class="name-el">Code leerlingenkaart: </span><span class="value-el"><b><%-bcode%></b></span></p> 
+            <p><span class="name-el">Saldo: </span><span class="value-el"><b><%-saldo%> €</b></span></p> 
+            <p><span class="name-el">PIN-code: </span><span class="value-el"><b>****</b></span></p> 
+            <p><span class="name-el">Wachtwoord: </span><span class="value-el"><b>********</b></span></p> 
+        </div>
+        <div class="account">
+    
+        </div>
+    </div>
+
+    <style>
+*{
+    overflow-y: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+html,body{
+    margin: 0;
+   height: 100%;
+}
+p{
+    font-size: 12pt;
+}
+.fa-solid.fa-xmark{
+    cursor: pointer;
+}
+#topnav{
+    margin: 0;
+    padding: 0;
+    background-color: #036ffc;
+    width: 100%;
+    overflow: hidden;
+}
+.selection-buttons{
+    display: flex;
+    background-color: #036ffc;
+    cursor: pointer;
+    border: none;
+    transition-duration: 0.4s;
+    margin: 5px;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
+    color: black;
+    float: left !important;
+    i{
+        margin-right: 5px;
+    }
+}
+#topnav button:hover{
+    background-color: #4294ff;
+}
+#main{
+    position: relative;
+    margin-top: 25px !important;
+    box-shadow: 3px 3px 0px 0px;
+    display: block;
+    margin: auto;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 40%;
+}
+.account{
+   h2{
+    text-align: center;
+   } 
+}
+.name-el{
+    margin-left: 20px;
+    text-align: left;
+}
+.value-el{
+    position: absolute;
+    left: 250px;
+}
+    </style>
+</body>

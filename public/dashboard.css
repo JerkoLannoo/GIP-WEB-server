@@ -15,21 +15,25 @@ p{
 #topnav{
     margin: 0;
     padding: 0;
-    background-color: #414247;
+    background-color: #036ffc;
     width: 100%;
     overflow: hidden;
 }
 .selection-buttons{
+    display: flex;
+    background-color: #036ffc;
     cursor: pointer;
     border: none;
     transition-duration: 0.4s;
     margin: 5px;
     text-decoration: none;
     padding: 5px;
-    background-color: #1cde18;
     border-radius: 5px;
-    color: white;
+    color: black;
     float: left !important;
+    i{
+        margin-right: 5px;
+    }
 }
 #topnav button:hover{
     background-color: #4294ff;
@@ -199,7 +203,7 @@ input[type="checkbox"]::after{
    accent-color: #1cde18;
 }
 .history-subContainer{
-    box-shadow: 0px 0px 2px 0px;
+    box-shadow: 3px 3px 0px 0px;
     width: fit-content;
     margin: auto; 
     margin-top: 15px; 

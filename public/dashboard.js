@@ -20,8 +20,8 @@ function showTab(el, btn){
     for(let i=0;i<document.getElementById("main").querySelectorAll("div").length;i++) {
         document.getElementById("main").querySelectorAll("div")[i].style.display="none"
     } 
-    for(let i=0;i<document.getElementById("topnav").querySelectorAll("button").length;i++) {
-        document.getElementById("topnav").querySelectorAll("button")[i].style.backgroundColor="#1cde18"
+    for(let i=0;i<document.getElementById("topnav").querySelectorAll("a").length;i++) {
+        document.getElementById("topnav").querySelectorAll("a")[i].style.backgroundColor="#036ffc"
     } 
     el.style.display="block"
     btn.style.backgroundColor="#4294ff"
@@ -236,13 +236,13 @@ function calcPrice(input, priceField, type){
 function switchNew(el){
     if(el.innerText==="Tijd"){
         document.getElementById("time-new").style.display="block"
-        el.parentElement.querySelectorAll("a")[1].style.backgroundColor="#1cde18"
+        el.parentElement.querySelectorAll("a")[1].style.backgroundColor="#036ffc"
         document.getElementById("data-new").style.display="none"
         el.style.backgroundColor = "#4294ff"
     }
     else{
         document.getElementById("time-new").style.display="none"
-        el.parentElement.querySelectorAll("a")[0].style.backgroundColor="#1cde18"
+        el.parentElement.querySelectorAll("a")[0].style.backgroundColor="#036ffc"
         document.getElementById("data-new").style.display="block"
         el.style.backgroundColor = "#4294ff"
     }
