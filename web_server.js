@@ -490,6 +490,9 @@ app.get("/", function(req,res){
   if(req.session.login)   res.redirect("/user/dashboard")
   else res.render(__dirname+"/home.ejs", {status: 0, popupbtntext:"Sluiten", bcode:""})
 })
+app.use(function(req,res){
+  res.sendFile(__dirname+"/404.html")
+})
 server.listen(8008, ()=>{
   console.log("luisteren")
 })

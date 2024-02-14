@@ -9,10 +9,11 @@
 <body >
 
     <div id="topnav">
-        <a onclick="showTab(document.getElementById('history'), this);" style="background-color:#4294ff" class="selection-buttons"><i class="fa-solid fa-clock-rotate-left"></i> Geschiedenis</a>
-        <a onclick="showTab(document.getElementById('nieuw'), this)" class="selection-buttons"><i class="fa-solid fa-plus"></i> Nieuw</a>
-        <a onclick="showTab(document.getElementById('saldo'),this)" class="selection-buttons"><i class="fa-solid fa-credit-card fa-fw"></i> Saldo</a>
-        <a href="/user/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i> Log uit</a>
+        <i onclick="showHistroyKeuzemenu(document.getElementById('history-keuzemenu'))" class="fa-solid fa-bars selection-buttons" style="cursor: pointer; display: none;" id="keuzemenu-bar"></i>
+        <a onclick="showTab(document.getElementById('history'), this);" style="background-color:#4294ff" class="selection-buttons"><i class="fa-solid fa-clock-rotate-left"></i><span class="topnav-info-text"> Geschiedenis</span></a>
+        <a onclick="showTab(document.getElementById('nieuw'), this)" class="selection-buttons"><i class="fa-solid fa-plus"></i><span class="topnav-info-text"> Nieuw</span></a>
+        <a onclick="showTab(document.getElementById('saldo'),this)" class="selection-buttons"><i class="fa-solid fa-credit-card fa-fw"></i><span class="topnav-info-text"> Saldo</span></a>
+        <a href="/user/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i><span class="topnav-info-text"> Log uit</span></a>
         <a href="/user/account" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
     
@@ -187,10 +188,10 @@
         </div>
         
         <div id="history" style="display: inline-block;">
-            <i onclick="showHistroyKeuzemenu(document.getElementById('history-keuzemenu'))" class="fa-solid fa-bars" style="margin-left: 15px; top: 50px; position: absolute; cursor: pointer; display: none;" id="keuzemenu-bar"></i>
-            <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray; width: 200px;" id="history-keuzemenu">
-                <p style="color: gray; cursor: pointer; margin-top: 30px; display: flex;" onclick="switchToSubTab('history-beurten', 'data-usage')"><i class="fa-solid fa-ticket fa-fw" style="padding: 0px 10px;"></i> Beurten</p>
-                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex;" onclick="switchToSubTab('data-usage', 'history-beurten')"><i class="fa-solid fa-database fa-fw" style="padding: 0px 10px;"></i> Verbruik</p>
+            
+            <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray;" id="history-keuzemenu">
+                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px ;" onclick="switchToSubTab('history-beurten', 'data-usage')"><i class="fa-solid fa-ticket fa-fw" style="padding: 00px 10px 0px 0px;"></i> Beurten</p>
+                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px;" onclick="switchToSubTab('data-usage', 'history-beurten')"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Verbruik</p>
             </section>
             <section id="history-beurten" class="history-subContainer">
                 <h3 style="text-align: center !important;">Geschiedenis</h3>

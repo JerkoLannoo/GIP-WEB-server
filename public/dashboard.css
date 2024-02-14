@@ -233,9 +233,22 @@ input[type="checkbox"]::after{
     border: 1px solid gray; 
     margin-bottom: 100px;
 }
+
 @media only screen and (max-device-width: 1000px)  {
     body{
         overflow-y: none !important;
+    }
+    #topnav{
+        zoom: 1.15;
+    }
+    .selection-buttons i{
+        margin-right: 0 !important;
+    }
+    .fa-solid.fa-user{
+        margin-right: 5px !important;/*kleine marge tussen icoon en gebruikersnaam*/
+    }
+    .topnav-info-text{
+        display: none;
     }
     #data-usage{
         min-width: 80% !important;
