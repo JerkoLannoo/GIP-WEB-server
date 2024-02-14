@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <title>GIP Jerko | Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
     <link rel="stylesheet" href="/fa/css/solid.min.css">
 </head>
@@ -12,6 +13,20 @@
         <a href="" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
     <div id="main">
+        <div  id="pop-up"  style="display: none;"  >
+            <section style="width: 100%; background-color: lightgray; height: 25px; position: absolute;"><!--dit is een section omdat js alle divs in het begin verwijdert-->
+                <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
+                <i class="fa-solid fa-xmark" onclick="document.getElementById('pop-up').style.display='none';document.getElementById('pop-up-background').style.display='none';" style="color: black; right: 5px; top: 5px; position: absolute;" id="pop-up-close"></i>
+            </section>
+            <br>
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="pop-up-spinner"></i>
+            <p id="pop-up-info"></p> 
+            <button onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn" style="text-align: center;">Sluiten</button>
+            <br><br>
+        </div>
+
+        <div id="pop-up-background" style="display: none;" >
+        </div>
         <div class="account">
             <h2>Account info</h2>
             <br>
@@ -21,14 +36,122 @@
             <p><span class="name-el">Code leerlingenkaart: </span><span class="value-el"><b><%-bcode%></b></span></p> 
             <p><span class="name-el">Saldo: </span><span class="value-el"><b><%-saldo%> €</b></span></p> 
             <p><span class="name-el">PIN-code: </span><span class="value-el"><b>****</b></span></p> 
+            <button class="name-el" onclick="this.disabled=true;document.getElementById('change-pin').style.display='block'">PIN-code wijzigen</button>
+            <br>
+            <div id="change-pin" style="display: none;">
+                <br>
+                <label for="old-pin" id="old-pin-label" class="name-el">Oude PIN-code:</label>
+                <input type="password" name="old-pin"  id="old-pin" class="value-el" pattern="[0-9]{4}" maxlength="4">
+                <br>
+                <br>
+                <label for="new-pin" id="new-pin-label" class="name-el">Nieuwe PIN-code:</label>
+                <input type="password" name="" pattern="[0-9]{4}" id="new-pin" class="value-el" pattern="[0-9]{4}" maxlength="4">
+                <br>
+                <br>
+                <label for="repeat-new-pin" id="repeat-new-pin-label" class="name-el">Herhaal nieuwe PIN-code:</label>
+                <input type="password" name="" id="repeat-new-pin" pattern="[0-9]{4}" class="value-el" pattern="[0-9]{4}" maxlength="4">
+                <br>
+                <br>
+                <button class="name-el" onclick="changePin()">Wijzigen</button>
+            </div>
             <p><span class="name-el">Wachtwoord: </span><span class="value-el"><b>********</b></span></p> 
         </div>
         <div class="account">
-    
+            <p>Ik ben de instellingen div de leeg is :(</p>
         </div>
     </div>
-
+    <script>
+var popupInfo=document.getElementById("pop-up-info")
+var popup = document.getElementById("pop-up")
+var popupBackground=document.getElementById("pop-up-background")
+var popupBtn = document.getElementById("pop-up-btn")
+        function changePin(){
+                
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.innerText="Wacht even..."
+                document.getElementById("pop-up-spinner").style.display="block"
+                if(document.getElementById("repeat-new-pin").value===document.getElementById("new-pin").value&&document.getElementById("new-pin").value.length==4){
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", "/user/dashboard/change-pin", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                var data = "oldPin="+document.getElementById("old-pin").value+"&"
+                +"newPin="+document.getElementById("new-pin").value
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                    document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText="Je PIN-code is verandert."
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                };
+                }
+                else if(document.getElementById("new-pin").value.length!=4){
+                document.getElementById("pop-up-spinner").style.display="none"
+                popupInfo.style.color="red"
+                popupInfo.innerText="De PIN-code moet een lengte van 4 cijfers hebben." 
+                popupBtn.innerText="Sluiten"
+                }
+                else{
+                document.getElementById("pop-up-spinner").style.display="none"
+                popupInfo.style.color="red"
+                popupInfo.innerText="De 2 PIN-codes komen niet overeen." 
+                popupBtn.innerText="Sluiten"
+                }
+        }
+    </script>
     <style>
+        .account{
+            position: relative;
+    margin-top: 25px !important;
+    box-shadow: 3px 3px 0px 0px;
+    display: block;
+    margin: auto;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 700px;
+        }
+        p{
+            font-size: 14pt;
+        }
+#pop-up{
+text-align: center !important;
+animation: popupanimation 0.3s;
+background-color: white;
+position: absolute;
+border-radius: 5px;
+border: 2px solid gray;
+z-index: 6;
+top: 25%;
+left: 50%;
+margin-top: -50px;
+margin-left: -192px;
+width: 375px;
+   
+}
+#pop-up-background{
+overflow: visible;
+top: 0;
+position: fixed;
+width: 100%;
+height: 100%;
+z-index: 4;
+background-color: black;
+opacity: 50%;
+}
 *{
     overflow-y: hidden;
     font-family: Arial, Helvetica, sans-serif;
@@ -70,14 +193,7 @@ p{
     background-color: #4294ff;
 }
 #main{
-    position: relative;
-    margin-top: 25px !important;
-    box-shadow: 3px 3px 0px 0px;
     display: block;
-    margin: auto;
-    border: 1px solid black;
-    border-radius: 5px;
-    width: 40%;
 }
 .account{
    h2{
@@ -90,7 +206,76 @@ p{
 }
 .value-el{
     position: absolute;
-    left: 250px;
+    left: 50%;
+}
+button{
+    cursor: pointer;
+    font-size: 13pt;
+    border-radius: 5px;
+    background-color: #036ffc;
+    border-color: #036ffc;
+    color: white;
+}
+button:hover{
+    background-color: #4294ff;
+    border-color: #4294ff;
+}
+button:disabled{
+    background-color: gray;
+    border-color: gray;
+    color: black;
+    cursor: not-allowed;
+}
+input{
+    transition-duration: 0.4s;
+    outline: none !important;
+    border: none;
+    border-radius: 0px !important;
+    border-bottom: 2px solid gray;
+    background-color: #e8f1fc;
+}
+input:focus{
+border-bottom:2px solid #036ffc;
+box-shadow: none;
+}
+input:invalid{
+border-bottom:2px solid red;
+box-shadow: none;
+}
+input:valid{
+border-bottom:2px solid green;
+box-shadow: none;
+}
+
+@media only screen and (max-device-width: 1000px)  {
+        body{
+            width: 100%;
+        }
+        #main{
+            border: none !important;
+            box-shadow: none;
+        }
+        .account{
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            border-top: 1px solid black;
+            width: 100% !important;
+        }
+}
+@keyframes popupanimation{
+    0%{
+        transform: scale(0.8);
+        opacity: 0%;
+    }
+    50%{
+        transform: scale(1.05);
+        opacity: 100%;
+    }
+    100%{
+        transform: scale(1);
+        opacity: 100%;
+    }
 }
     </style>
 </body>

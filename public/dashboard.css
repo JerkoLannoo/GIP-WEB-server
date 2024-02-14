@@ -120,6 +120,16 @@ opacity: 50%;
     padding: 10px 10px;
     margin: 10px 10px;
 }
+#data-usage{
+    max-width: calc(100% - 430px) !important;/*zorgt ervoor dat deze div niet achter het linkse menu kan geraken*/
+    box-shadow: 3px 3px 0px 0px;
+    width: fit-content;
+    margin: auto; 
+    margin-top: 15px; 
+    margin-bottom: 50px; 
+    border-radius: 15px; 
+    border: 1px solid gray; 
+}
 .data-usage{
     background-color: #036ffc;
     border-radius: 5px;
@@ -212,6 +222,17 @@ input[type="checkbox"]::after{
     border: 1px solid gray; 
     max-width: 1600px;
 }
+#history-beurten{
+    max-width: calc(100% - 430px);/*zorgt ervoor dat deze div niet achter het linkse menu kan geraken*/
+    box-shadow: 3px 3px 0px 0px;
+    width: fit-content;
+    margin: auto; 
+    margin-top: 15px; 
+    margin-bottom: 50px; 
+    border-radius: 15px; 
+    border: 1px solid gray; 
+    margin-bottom: 100px;
+}
 @media only screen and (max-device-width: 1000px)  {
     body{
         overflow-y: none !important;
@@ -257,7 +278,7 @@ body{
     width: 100%;
 }
 #history-beurten{
-    max-width: 90%;
+ max-width: 90%;
 }
 }
 @keyframes popupanimation{

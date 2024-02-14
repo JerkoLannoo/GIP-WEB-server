@@ -94,11 +94,11 @@ box-shadow: none;
 .optiondiv input:invalid{
     border-bottom:2px solid red;
     box-shadow: none;
-    }
-    .optiondiv input:valid{
+}
+.optiondiv input:valid{
         border-bottom:2px solid green;
         box-shadow: none;
-        }
+}
 button{
     cursor: pointer;
     font-size: 13pt;

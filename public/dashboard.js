@@ -354,11 +354,13 @@ function formatTime(time){
     if(time<24) return time +"h"
     else if(time>=24&&time<720) {
         console.log("tijd groter dan 24: "+time/24+time%24)
-        return (time/24)+" Dag(en)"
+        if(time/24>1) return (time/24)+" Dagen"
+        else return "1 Dag"
     }
     else if(time>=720) {
         console.log("tijd groter dan 24")
-        return (time/720)+" Maand(en)"
+        if(time/720>1) return (time/720)+" Maanden"
+        else return "1 Maand"
     }
 }
 function setType(type){

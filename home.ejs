@@ -151,18 +151,18 @@
                     bcode = document.getElementById("bcode-input").value;
                     email=document.getElementById("email").value
                     data= 'bcode='+bcode+'&'+
-                'email='+email+'&'+
-                'pin='+document.getElementById("terminal-pin").value+'&'+
-                'password='+document.getElementById("terminal-password").value
+                    'email='+email+'&'+
+                    'pin='+document.getElementById("terminal-pin").value+'&'+
+                    'password='+document.getElementById("terminal-password").value
                 }  
                 else {//enkel online
                     bcode= document.getElementById("online-bcode-input").value
                     email=document.getElementById("online-email").value
                     data= 'bcode='+bcode+'&'+
-                'email='+email+'&'+
-                'pin='+document.getElementById("online-pin").value+'&'+
-                'password='+document.getElementById("online-password").value+'&'+
-                'code='+document.getElementById("code-input").value
+                    'email='+email+'&'+
+                    'pin='+document.getElementById("online-pin").value+'&'+
+                    'password='+document.getElementById("online-password").value+'&'+
+                    'code='+document.getElementById("code-input").value
                 } 
                 console.log(email)
                 const xhr = new XMLHttpRequest();

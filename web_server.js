@@ -310,7 +310,7 @@ app.post("/user/dashboard/create-new-time", function(req,res){
        let str = "0123456789azeretyuiopqsdfghjklmwxcvbn"
        let password=""
        let totprice = parseFloat(price[0])+parseFloat(price[1])//anders worden ze stringmatig opgetelt
-       if(totprice<=result[1][0].saldo&&(req.body.devices>0||req.body.gDevices>0)){
+       if(totprice<=result[1][0].saldo&&(req.body.devices>0||req.body.gDevices>0)&&!isNaN(req.body.activationDate)){
         let suffix = ""
         for(let i=0;i<8;i++) password+=str.charAt(Math.random()*str.length)
            //voor normale apparaten
@@ -350,7 +350,7 @@ app.post("/user/dashboard/create-new-time", function(req,res){
              }
              else res.sendStatus(400)
        }
-       else if(req.body.devices==0&&req.body.gDevices==0) res.send({success:false, msg: "Vul alle velden in."})
+       else if((req.body.devices==0&&req.body.gDevices==0)||isNaN(req.body.activationDate)) res.send({success:false, msg: "Vul alle velden in."})
        else res.send({success:false, msg: "Niet genoeg saldo."})
     }
     })
@@ -459,6 +459,32 @@ app.get("/user/account", function(req,res){
     })
   } 
   else res.redirect("/login")
+})
+app.put("/user/dashboard/change-pin", function(req,res){
+  if(req.session.login){
+    con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email)+" AND pin=SHA2("+req.body.oldPin+",512)", function(err, result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else if(result.length){
+        if(req.body.newPin.length==4){
+          con.query("UPDATE users SET pin=SHA2("+req.body.newPin+", 512)", function(err, result){
+            if(err) {
+              console.log(err)
+              res.send(500)
+            }
+            else{
+              res.send({success:true})
+            }
+          })
+        }
+        else res.send({success: false, msg: "De nieuwe PIN-code moet een lengte van 4 cijfers hebben."})
+      }
+      else res.send({success: false, msg: "De oude PIN-code is niet juist."})
+    })
+  }
+  else res.send(401)
 })
 app.get("/", function(req,res){
   if(req.session.login)   res.redirect("/user/dashboard")
