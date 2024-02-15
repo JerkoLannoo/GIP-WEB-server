@@ -254,7 +254,9 @@ app.post("/login/send-data", function(req,res){
   req.session.username=result[0].username
   req.session.email=result[0].email
   req.session.password=result[0].password//kan misschien weg
-    res.redirect("/user/dashboard")
+  console.log(req.query)
+  if(req.query.src!=null) res.redirect(req.query.src)
+  else res.redirect("/user/dashboard#history")
   }
   else res.render(__dirname+"/login", {fout: "Onjuist e-mail adres of wachwoord.", status:0})
   })
@@ -263,7 +265,7 @@ app.get("/user/dashboard", function(req,res){
   if(req.session.login){
     res.render(__dirname+"/dashboard.ejs", {username: req.session.username})
   }
-  else res.redirect("/login")
+  else res.redirect("/login?src="+url.parse(req.url).pathname)
 })
 app.get("/user/dashboard/get-history", function(req,res){
   if(req.session.login){
@@ -458,7 +460,7 @@ app.get("/user/account", function(req,res){
       }
     })
   } 
-  else res.redirect("/login")
+  else res.redirect("/login?src="+url.parse(req.url).pathname)
 })
 app.put("/user/dashboard/change-pin", function(req,res){
   if(req.session.login){
@@ -482,6 +484,32 @@ app.put("/user/dashboard/change-pin", function(req,res){
         else res.send({success: false, msg: "De nieuwe PIN-code moet een lengte van 4 cijfers hebben."})
       }
       else res.send({success: false, msg: "De oude PIN-code is niet juist."})
+    })
+  }
+  else res.send(401)
+})
+app.put("/user/dashboard/change-pass", function(req,res){
+  if(req.session.login){
+    con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email)+" AND password=SHA2("+req.body.oldPass+",512)", function(err, result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else if(result.length){
+        if(req.body.newPass.length>=8&&req.body.newPass.length<=15){
+          con.query("UPDATE users SET password=SHA2("+req.body.newPass+", 512)", function(err, result){
+            if(err) {
+              console.log(err)
+              res.send(500)
+            }
+            else{
+              res.send({success:true})
+            }
+          })
+        }
+        else res.send({success: false, msg: "Het nieuwe wachtwoord moet een lengte tussen 8 en 15 tekens hebben."})
+      }
+      else res.send({success: false, msg: "Het oud wachtwoord is niet juist."})
     })
   }
   else res.send(401)

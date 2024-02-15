@@ -9,7 +9,7 @@
 <body >
 
     <div id="topnav">
-        <i onclick="showHistroyKeuzemenu(document.getElementById('history-keuzemenu'))" class="fa-solid fa-bars selection-buttons" style="cursor: pointer; display: none;" id="keuzemenu-bar"></i>
+        <i onclick="showHistroyKeuzemenu(document.getElementsByClassName('keuzemenus'))" class="fa-solid fa-bars selection-buttons" style="cursor: pointer;" id="keuzemenu-bar"></i>
         <a onclick="showTab(document.getElementById('history'), this);" style="background-color:#4294ff" class="selection-buttons"><i class="fa-solid fa-clock-rotate-left"></i><span class="topnav-info-text"> Geschiedenis</span></a>
         <a onclick="showTab(document.getElementById('nieuw'), this)" class="selection-buttons"><i class="fa-solid fa-plus"></i><span class="topnav-info-text"> Nieuw</span></a>
         <a onclick="showTab(document.getElementById('saldo'),this)" class="selection-buttons"><i class="fa-solid fa-credit-card fa-fw"></i><span class="topnav-info-text"> Saldo</span></a>
@@ -40,9 +40,13 @@
         <div id="pop-up-background" style="display: none;" >
         </div>
         <div id="nieuw">
-            <section style="display: block; position: absolute; background-color: #036ffc; border-radius: 5px; margin-left: 110px; margin-top: 5px;">
+            <section style="display: none; position: absolute; background-color: #036ffc; border-radius: 5px; margin-left: 110px; margin-top: 5px;">
                 <a class="selection-buttons" style="background-color: #4294ff;" onclick="switchNew(this)"><i class="fa-solid fa-clock"></i> Tijd</a>
                 <a class="selection-buttons" onclick="switchNew(this)"><i class="fa-solid fa-database"></i> Data</a>
+            </section>
+            <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray;" id="nieuw-keuzemenu" class="keuzemenus">
+                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px ;" onclick="switchNew(this)"><i class="fa-solid fa-clock fa-fw" style="padding: 00px 10px 0px 0px;"></i> Tijd</p>
+                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px;" onclick="switchNew(this)"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Data</p>
             </section>
             <section id="time-new" class="history-subContainer">
                 <h3>Nieuw aanmaken</h3>
@@ -188,8 +192,7 @@
         </div>
         
         <div id="history" style="display: inline-block;">
-            
-            <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray;" id="history-keuzemenu">
+            <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray;" id="history-keuzemenu" class="keuzemenus">
                 <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px ;" onclick="switchToSubTab('history-beurten', 'data-usage')"><i class="fa-solid fa-ticket fa-fw" style="padding: 00px 10px 0px 0px;"></i> Beurten</p>
                 <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px;" onclick="switchToSubTab('data-usage', 'history-beurten')"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Verbruik</p>
             </section>

@@ -1,3 +1,4 @@
+var currentTab=0;
 var eenvoudigVerbruik=[]
 var verbruik = []
 var sorted=[];
@@ -13,9 +14,14 @@ getTimePrices()
 getDataPrices()
 getSaldo() 
 getVerbruik()
+console.log("hash: "+window.location.hash)
 for(let i=0;i<document.getElementById("main").querySelectorAll("div").length;i++) document.getElementById("main").querySelectorAll("div")[i].style.display="none"
 document.getElementById("history").style.display="block"
-
+/*if(window.location.hash){
+    if(window.location.hash==="#history") showTab(document.getElementById('history'), document.getElementsByClassName("selection-buttons")[1]);
+    else if(window.location.hash==="#nieuw") showTab(document.getElementById('nieuw'), document.getElementsByClassName("selection-buttons")[2]);
+    else showTab(document.getElementById('#saldo'), document.getElementsByClassName("selection-buttons")[3]);
+}*/
 function showTab(el, btn){
     for(let i=0;i<document.getElementById("main").querySelectorAll("div").length;i++) {
         document.getElementById("main").querySelectorAll("div")[i].style.display="none"
@@ -25,6 +31,9 @@ function showTab(el, btn){
     } 
     el.style.display="block"
     btn.style.backgroundColor="#4294ff"
+    history.pushState(null, null, "#"+el.id);
+    if(el.id=="saldo") document.getElementById("keuzemenu-bar").style.display="none"
+    else if(screen.width<1000) document.getElementById("keuzemenu-bar").style.display="block"
 }
 function getHistory(){
     console.log("ok")
@@ -236,15 +245,15 @@ function calcPrice(input, priceField, type){
 function switchNew(el){
     if(el.innerText==="Tijd"){
         document.getElementById("time-new").style.display="block"
-        el.parentElement.querySelectorAll("a")[1].style.backgroundColor="#036ffc"
+      //  el.parentElement.querySelectorAll("p")[1].style.backgroundColor="#e6efff"
         document.getElementById("data-new").style.display="none"
-        el.style.backgroundColor = "#4294ff"
+      //  el.style.backgroundColor = "#bbbdbb"
     }
     else{
         document.getElementById("time-new").style.display="none"
-        el.parentElement.querySelectorAll("a")[0].style.backgroundColor="#036ffc"
+       // el.parentElement.querySelectorAll("p")[0].style.backgroundColor="#e6efff"
         document.getElementById("data-new").style.display="block"
-        el.style.backgroundColor = "#4294ff"
+       // el.style.backgroundColor = "#bbbdbb"
     }
 }
 function setCreationType(){
@@ -445,13 +454,23 @@ function showHistoryInfo(el){
     createHistory(sorted[el.rowIndex-1])
 }
 function showHistroyKeuzemenu(el){
-    console.log(el.querySelectorAll("p"))
-    if(el.style.display==="block"){
-       el.style.display="none"
+    if(el[1].parentElement.style.display==="none"){//nieuw niet zichtbaar
+        if(el[0].style.display==="block"){
+            el[0].style.display="none"
+         }
+         else {
+             el[0].style.display="block"
+         } 
     }
-    else {
-        el.style.display="block"
-    } 
+    else{//geschiedenis niet zichtbaar
+        if(el[1].style.display==="block"){
+            el[1].style.display="none"
+         }
+         else {
+             el[1].style.display="block"
+         } 
+    }
+
 }
 function switchToSubTab(visible, invisible){
     document.getElementById(visible).style.display="block"

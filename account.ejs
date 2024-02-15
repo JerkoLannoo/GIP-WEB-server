@@ -55,8 +55,28 @@
                 <button class="name-el" onclick="changePin()">Wijzigen</button>
             </div>
             <p><span class="name-el">Wachtwoord: </span><span class="value-el"><b>********</b></span></p> 
+            <button class="name-el" onclick="this.disabled=true;document.getElementById('change-pass').style.display='block'">Wachtwoord wijzigen</button>
+            <br>
+            <div id="change-pass" style="display: none;">
+                <br>
+                <label for="old-pass" id="old-pass-label" class="name-el">Oud wachtwoord:</label>
+                <input type="password" name="old-pass"  id="old-pass" class="value-el" maxlength="15" minlength="8">
+                <br>
+                <br>
+                <label for="new-pass" id="new-pass-label" class="name-el">Nieuw wachtwoord:</label>
+                <input type="password" name="" id="new-pass" class="value-el" maxlength="15" minlength="8">
+                <br>
+                <br>
+                <label for="repeat-new-pass" id="repeat-new-pass-label" class="name-el">Herhaal nieuw wachtwoord:</label>
+                <input type="password" name="" id="repeat-new-pass" class="value-el" maxlength="15" minlength="8">
+                <br>
+                <br>
+                <button class="name-el" onclick="changePass()">Wijzigen</button>
+        </div>
+        <br><br>
         </div>
         <div class="account">
+            <h2>Account instellingen</h2>
             <p>Ik ben de instellingen div de leeg is :(</p>
         </div>
     </div>
@@ -109,6 +129,52 @@ var popupBtn = document.getElementById("pop-up-btn")
                 document.getElementById("pop-up-spinner").style.display="none"
                 popupInfo.style.color="red"
                 popupInfo.innerText="De 2 PIN-codes komen niet overeen." 
+                popupBtn.innerText="Sluiten"
+                }
+        }
+        function changePass(){
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.innerText="Wacht even..."
+                document.getElementById("pop-up-spinner").style.display="block"
+                if(document.getElementById("repeat-new-pass").value===document.getElementById("new-pass").value&&document.getElementById("new-pass").value.length>=8&&document.getElementById("new-pass").value.length<=15){
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", "/user/dashboard/change-pass", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                var data = "oldPass="+document.getElementById("old-pass").value+"&"
+                +"newPass="+document.getElementById("new-pass").value
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                    document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText="Je wachtwoord is verandert."
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                };
+                }
+                else if(document.getElementById("new-pass").value.length<8||document.getElementById("new-pass").value.length>15){
+                document.getElementById("pop-up-spinner").style.display="none"
+                popupInfo.style.color="red"
+                popupInfo.innerText="Het nieuwe wachtwoord moet een lengte van minstens 8 tekens hebben." 
+                popupBtn.innerText="Sluiten"
+                }
+                else{
+                document.getElementById("pop-up-spinner").style.display="none"
+                popupInfo.style.color="red"
+                popupInfo.innerText="De 2 wachtwoorden komen niet overeen." 
                 popupBtn.innerText="Sluiten"
                 }
         }
@@ -232,7 +298,6 @@ input{
     border: none;
     border-radius: 0px !important;
     border-bottom: 2px solid gray;
-    background-color: #e8f1fc;
 }
 input:focus{
 border-bottom:2px solid #036ffc;

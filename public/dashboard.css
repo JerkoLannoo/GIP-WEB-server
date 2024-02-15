@@ -233,7 +233,9 @@ input[type="checkbox"]::after{
     border: 1px solid gray; 
     margin-bottom: 100px;
 }
-
+#keuzemenu-bar{
+    display: none ;
+}
 @media only screen and (max-device-width: 1000px)  {
     body{
         overflow-y: none !important;
@@ -258,7 +260,8 @@ input[type="checkbox"]::after{
         display: none;
     }
     #keuzemenu-bar{
-        display: block !important;
+       /* animation: keuzemenu-bar 0.5s;*/
+        display: block ;
         z-index: 2;
     }
     #history-keuzemenu-hidden{
@@ -322,5 +325,17 @@ body{
     }
     100%{
         transform: scaleX(1);
+    }
+}
+@keyframes keuzemenu-bar{
+    0%{
+        opacity: 0;
+        transform: rotate(180deg);
+        transform: scale(0);
+    }
+    100%{
+        opacity: 1;
+        transform: rotate(0deg);
+        transform: scale(1);
     }
 }

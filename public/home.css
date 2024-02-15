@@ -169,18 +169,21 @@ body{
     overflow-y: scroll;
     overflow-x: hidden;
     width: 100%;
-    background-color: #036ffc;
 }
 .optiondiv{
+    opacity: 1;
     margin: auto;
     width: 90% !important;
+    margin-bottom: 10px;
+}
+.optiondiv:hover{
+    transform: none;
 }
 #options{
    
     width: 100%;
     margin: 0 0;
     flex-direction: column;
-   
 }
 }
 @keyframes popupanimation{

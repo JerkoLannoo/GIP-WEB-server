@@ -40,5 +40,9 @@
             <button type="submit">Log in</button>
         </form>
     </div>
-
+<script>
+    let url = new URL(this.location.href)
+    console.log(url.searchParams.get("src"))
+    if(url.searchParams.get("src")!=null) document.getElementById("login-form").action += "?src=" + url.searchParams.get("src") + window.location.hash
+</script>
 </body>
