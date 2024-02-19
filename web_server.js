@@ -256,7 +256,7 @@ app.post("/login/send-data", function(req,res){
   req.session.password=result[0].password//kan misschien weg
   console.log(req.query)
   if(req.query.src!=null) res.redirect(req.query.src)
-  else res.redirect("/user/dashboard#history")
+  else res.redirect("/user/dashboard")//de # wegdoen om problemen te voorkomen
   }
   else res.render(__dirname+"/login", {fout: "Onjuist e-mail adres of wachwoord.", status:0})
   })

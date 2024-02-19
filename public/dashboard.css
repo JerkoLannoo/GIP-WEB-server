@@ -13,6 +13,7 @@ p{
     cursor: pointer;
 }
 #topnav{
+    display: block;
     margin: 0;
     padding: 0;
     background-color: #036ffc;

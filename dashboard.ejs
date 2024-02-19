@@ -45,8 +45,8 @@
                 <a class="selection-buttons" onclick="switchNew(this)"><i class="fa-solid fa-database"></i> Data</a>
             </section>
             <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray;" id="nieuw-keuzemenu" class="keuzemenus">
-                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px ;" onclick="switchNew(this)"><i class="fa-solid fa-clock fa-fw" style="padding: 00px 10px 0px 0px;"></i> Tijd</p>
-                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px;" onclick="switchNew(this)"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Data</p>
+                <p style="color: #6b6b6b; cursor: pointer; display: flex; padding: 10px 10px; margin: 0 0 !important; background-color: #bbbdbb;" onclick="switchNew(this)"><i class="fa-solid fa-clock fa-fw" style="padding: 00px 10px 0px 0px;"></i> Tijd</p>
+                <p style="color: #6b6b6b; cursor: pointer; display: flex; padding: 10px 10px; margin: 0 0 !important;" onclick="switchNew(this)"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Data</p>
             </section>
             <section id="time-new" class="history-subContainer">
                 <h3>Nieuw aanmaken</h3>
@@ -193,8 +193,8 @@
         
         <div id="history" style="display: inline-block;">
             <section style="left: 0; position: absolute; display: block; height: 100%; background-color: #e6efff; border-right: 1px solid gray;" id="history-keuzemenu" class="keuzemenus">
-                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px ;" onclick="switchToSubTab('history-beurten', 'data-usage')"><i class="fa-solid fa-ticket fa-fw" style="padding: 00px 10px 0px 0px;"></i> Beurten</p>
-                <p style="color: gray; cursor: pointer; margin-top: 20px; display: flex; padding: 0px 20px;" onclick="switchToSubTab('data-usage', 'history-beurten')"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Verbruik</p>
+                <p style="color: #6b6b6b; cursor: pointer; display: flex; padding: 10px 10px; margin: 0 0 !important; background-color: #bbbdbb;" onclick="switchToSubTab('history-beurten', 'data-usage',this, this.parentElement.querySelectorAll('p')[1])"><i class="fa-solid fa-ticket fa-fw" style="padding: 00px 10px 0px 0px;"></i> Beurten</p>
+                <p style="color: #6b6b6b; cursor: pointer; display: flex; padding: 10px 10px; margin: 0 0 !important;" onclick="switchToSubTab('data-usage', 'history-beurten', this, this.parentElement.querySelectorAll('p')[0])"><i class="fa-solid fa-database fa-fw" style="padding: 00px 10px 0px 0px;"></i> Verbruik</p>
             </section>
             <section id="history-beurten" class="history-subContainer">
                 <h3 style="text-align: center !important;">Geschiedenis</h3>
