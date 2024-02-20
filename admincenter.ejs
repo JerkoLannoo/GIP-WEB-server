@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <title>GIP Jerko | Account</title>
+    <title>GIP Jerko | Admin center</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/fa/css/fontawesome.min.css">
     <link rel="stylesheet" href="/fa/css/solid.min.css">
@@ -8,8 +8,8 @@
 <body>
     
     <div id="topnav">
-        <a href="/user/dashboard" class="selection-buttons"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="/user/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i>Log uit</a>
+        <span class="selection-buttons"><i class="fa-solid fa-house"></i> Home</span>
+        <a href="/admin/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i>Log uit</a>
         <a href="" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
     <div id="main">
@@ -27,57 +27,41 @@
 
         <div id="pop-up-background" style="display: none;" >
         </div>
-        <div class="account">
-            <h2>Account info</h2>
+        <div class="settings">
+            <h1>GIP instellingen</h1>
+            <hr>
+            <h2>Prijzen</h2>
+            
+            <h3>Data prijs </h3>
+            <label for="data" class="name-el">Data in GB: </label>
+            <input type="number" name="" id="data" class="value-el" style="width: 50px;" step="1" min="1">
             <br>
             <br>
-            <p><span class="name-el">E-mail adres:</span><span class="value-el"><b><%-email%></b></span></p> 
-            <p><span class="name-el">Gebruikersnaam: </span><span class="value-el"><b><%-username%></b></span></p> 
-            <p><span class="name-el">Code leerlingenkaart: </span><span class="value-el"><b><%-bcode%></b></span></p> 
-            <p><span class="name-el">Saldo: </span><span class="value-el"><b><%-saldo%> €</b></span></p> 
-            <p><span class="name-el">PIN-code: </span><span class="value-el"><b>****</b></span></p> 
-            <button class="name-el" onclick="this.disabled=true;document.getElementById('change-pin').style.display='block'">PIN-code wijzigen</button>
+            <label for="data-price" class="name-el">Prijs in EUR: </label>
+            <input type="number" name="" id="data-price" step="0.01" style="width: 50px;" class="value-el" min="0">
+            <br><br>
+            <button class="name-el" onclick="changeDataPrice()">Updaten</button>
+            <h3>Tijd prijs </h3>
+                <label for="" class="name-el">Tijd: </label>
+                <span class="value-el">
+                <input type="number" name="" id="" style="width: 50px;" step="1" min="1">
+                <select name="" id="">
+                    <option value="1">Uur</option>
+                    <option value="24">Dag(en)</option>
+                    <option value="720">Maand(en)</option>
+                </select>
+            </span>
             <br>
-            <div id="change-pin" style="display: none;">
-                <br>
-                <label for="old-pin" id="old-pin-label" class="name-el">Oude PIN-code:</label>
-                <input type="password" name="old-pin"  id="old-pin" class="value-el" pattern="[0-9]{4}" maxlength="4">
-                <br>
-                <br>
-                <label for="new-pin" id="new-pin-label" class="name-el">Nieuwe PIN-code:</label>
-                <input type="password" name="" pattern="[0-9]{4}" id="new-pin" class="value-el" pattern="[0-9]{4}" maxlength="4">
-                <br>
-                <br>
-                <label for="repeat-new-pin" id="repeat-new-pin-label" class="name-el">Herhaal nieuwe PIN-code:</label>
-                <input type="password" name="" id="repeat-new-pin" pattern="[0-9]{4}" class="value-el" pattern="[0-9]{4}" maxlength="4">
-                <br>
-                <br>
-                <button class="name-el" onclick="changePin()">Wijzigen</button>
-            </div>
-            <p><span class="name-el">Wachtwoord: </span><span class="value-el"><b>********</b></span></p> 
-            <button class="name-el" onclick="this.disabled=true;document.getElementById('change-pass').style.display='block'">Wachtwoord wijzigen</button>
             <br>
-            <div id="change-pass" style="display: none;">
-                <br>
-                <label for="old-pass" id="old-pass-label" class="name-el">Oud wachtwoord:</label>
-                <input type="password" name="old-pass"  id="old-pass" class="value-el" maxlength="15" minlength="8">
-                <br>
-                <br>
-                <label for="new-pass" id="new-pass-label" class="name-el">Nieuw wachtwoord:</label>
-                <input type="password" name="" id="new-pass" class="value-el" maxlength="15" minlength="8">
-                <br>
-                <br>
-                <label for="repeat-new-pass" id="repeat-new-pass-label" class="name-el">Herhaal nieuw wachtwoord:</label>
-                <input type="password" name="" id="repeat-new-pass" class="value-el" maxlength="15" minlength="8">
-                <br>
-                <br>
-                <button class="name-el" onclick="changePass()">Wijzigen</button>
-        </div>
-        <br><br>
-        </div>
-        <div class="account">
-            <h2>Account instellingen</h2>
-            <p>Ik ben de instellingen div de leeg is :(</p>
+            <label for="" class="name-el">Prijs in EUR: </label>
+            <input type="number" name="" id="" step="0.01" style="width: 50px;" class="value-el" min="0">
+            <br><br>
+            <button class="name-el">Updaten</button>
+             <p class="name-el">
+                <b>Opmerking: bij het ingeven van bestaande gegevens worden de bestaande gegevens overschreven.</b>
+             </p>
+            <hr>
+            <h2>Netwerkinstellingen</h2>
         </div>
     </div>
     <script>
@@ -85,18 +69,16 @@ var popupInfo=document.getElementById("pop-up-info")
 var popup = document.getElementById("pop-up")
 var popupBackground=document.getElementById("pop-up-background")
 var popupBtn = document.getElementById("pop-up-btn")
-        function changePin(){
-                
+        function changeDataPrice(){
                 popup.style.display="block"
                 popupBackground.style.display="block"
                 popupInfo.innerText="Wacht even..."
                 document.getElementById("pop-up-spinner").style.display="block"
-                if(document.getElementById("repeat-new-pin").value===document.getElementById("new-pin").value&&document.getElementById("new-pin").value.length==4){
                 const xhr = new XMLHttpRequest();
-                xhr.open("PUT", "/user/dashboard/change-pin", true);
+                xhr.open("PUT", "/admin/dashboard/change-data-price", true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                var data = "oldPin="+document.getElementById("old-pin").value+"&"
-                +"newPin="+document.getElementById("new-pin").value
+                var data = "data="+document.getElementById("data").value+"&"
+                +"price="+document.getElementById("data-price").value
                 xhr.send(data)
                 xhr.onreadystatechange = () => {
                     document.getElementById("pop-up-spinner").style.display="none"
@@ -104,7 +86,7 @@ var popupBtn = document.getElementById("pop-up-btn")
                     let response=JSON.parse(xhr.response)
                     if(response.success){
                      popupInfo.style.color="black"
-                     popupInfo.innerText="Je PIN-code is verandert."
+                     popupInfo.innerText="De data prijzen zijn geüpdatet."
                     }
                     else{
                 popupInfo.style.color="red"
@@ -117,19 +99,6 @@ var popupBtn = document.getElementById("pop-up-btn")
                 popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
                 popupBtn.innerText="Sluiten"
                 }
-                };
-                }
-                else if(document.getElementById("new-pin").value.length!=4){
-                document.getElementById("pop-up-spinner").style.display="none"
-                popupInfo.style.color="red"
-                popupInfo.innerText="De PIN-code moet een lengte van 4 cijfers hebben." 
-                popupBtn.innerText="Sluiten"
-                }
-                else{
-                document.getElementById("pop-up-spinner").style.display="none"
-                popupInfo.style.color="red"
-                popupInfo.innerText="De 2 PIN-codes komen niet overeen." 
-                popupBtn.innerText="Sluiten"
                 }
         }
         function changePass(){
@@ -180,7 +149,7 @@ var popupBtn = document.getElementById("pop-up-btn")
         }
     </script>
     <style>
-        .account{
+        .settings{
             position: relative;
     margin-top: 25px !important;
     box-shadow: 3px 3px 0px 0px;
@@ -190,7 +159,7 @@ var popupBtn = document.getElementById("pop-up-btn")
     border-radius: 5px;
     width: 700px;
         }
-        p{
+        p, label{
             font-size: 14pt;
         }
 #pop-up{
@@ -260,8 +229,8 @@ p{
 #main{
     display: block;
 }
-.account{
-   h2{
+.settings{
+   h1,h2, h3, h4{
     text-align: center;
    } 
 }
@@ -319,7 +288,7 @@ box-shadow: none;
             border: none !important;
             box-shadow: none;
         }
-        .account{
+        .settings{
             border-radius: 0;
             box-shadow: none;
             border: none;

@@ -240,35 +240,46 @@ app.get("/login", (req, res)=>{
 if(!req.session.login){
   res.render(__dirname+"/login.ejs", {status:0, fout:""})
 }
+else if(req.session.admin) res.redirect("/admin/dashboard")
 else res.redirect("/user/dashboard")
 })
 app.post("/login/send-data", function(req,res){
-  con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.body.email)+" AND BINARY password=SHA2("+JSON.stringify(req.body.password)+", 512);", function(err,result){
+  con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.body.email)+" AND BINARY password=SHA2("+JSON.stringify(req.body.password)+", 512);"+
+  "SELECT * FROM admin WHERE username="+JSON.stringify(req.body.email)+" AND BINARY password=SHA2("+JSON.stringify(req.body.password)+", 512);",[1,2], function(err,result){
     if(err) {
       console.log(err)
       res.render(__dirname+"/login", {fout: "Er ging iets mis.", status:0})
     } 
-    else if(result.length) {
+    else if(result[0].length) {
+  req.session.admin = false;
   req.session.login=true
   console.log(req.session.login)
-  req.session.username=result[0].username
-  req.session.email=result[0].email
-  req.session.password=result[0].password//kan misschien weg
+  req.session.username=result[0][0].username
+  req.session.email=result[0][0].email
+  req.session.password=result[0][0].password//kan misschien weg
   console.log(req.query)
   if(req.query.src!=null) res.redirect(req.query.src)
   else res.redirect("/user/dashboard")//de # wegdoen om problemen te voorkomen
+  }
+  else if(result[1].length){
+    req.session.admin = true;
+    req.session.login=true
+    console.log(req.session.login)
+    req.session.username=result[1][0].username
+    req.session.password=result[1][0].password//kan misschien weg
+    res.redirect("/admin/dashboard")
   }
   else res.render(__dirname+"/login", {fout: "Onjuist e-mail adres of wachwoord.", status:0})
   })
 })
 app.get("/user/dashboard", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
     res.render(__dirname+"/dashboard.ejs", {username: req.session.username})
   }
   else res.redirect("/login?src="+url.parse(req.url).pathname)
 })
 app.get("/user/dashboard/get-history", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
     con.query("SELECT * FROM beurten WHERE email="+JSON.stringify(req.session.email), function(err,result){
       if(err){
         console.log(err)
@@ -280,7 +291,7 @@ app.get("/user/dashboard/get-history", function(req,res){
   else res.sendStatus(401)
 })
 app.get("/user/dashboard/get-time-prices", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
    con.query("SELECT * FROM tijdprijzen ORDER BY price DESC", function(err,result){
     if(err){
       console.log(err)
@@ -292,8 +303,8 @@ app.get("/user/dashboard/get-time-prices", function(req,res){
   else res.sendStatus(401)
 })
 app.get("/user/dashboard/get-data-prices", function(req,res){
-  if(req.session.login){
-   con.query("SELECT * FROM dataprijzen ORDER BY price DESC", function(err,result){
+  if(req.session.login && !req.session.admin){
+   con.query("SELECT * FROM dataprijzen ORDER BY price ASC", function(err,result){
     if(err){
       console.log(err)
       res.sendStatus(500)
@@ -304,7 +315,7 @@ app.get("/user/dashboard/get-data-prices", function(req,res){
   else res.sendStatus(401)
 })
 app.post("/user/dashboard/create-new-time", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
     con.query("SELECT * FROM tijdprijzen; SELECT saldo FROM users WHERE email='"+req.session.email+"'",[1,2], function(err ,result){
       if(err) console.log(err)
       else if(result.length){ 
@@ -419,7 +430,7 @@ app.post("/user/dashboard/create-new-data", function(req,res){
   else res.sendStatus(401)
 })
 app.post("/user/dashboard/set-saldo", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
     console.log(req.body)
 con.query("UPDATE users SET saldo=saldo+"+req.body.saldo+" WHERE email='"+req.session.email+"'", function(err,result){
   if(err) {
@@ -432,7 +443,7 @@ con.query("UPDATE users SET saldo=saldo+"+req.body.saldo+" WHERE email='"+req.se
   else res.sendStatus(401)
 })
 app.get("/user/dashboard/get-saldo", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
 con.query("SELECT saldo FROM users WHERE email='"+req.session.email+"'", function(err,result){
   if(err) {
     console.log(err)
@@ -444,11 +455,12 @@ con.query("SELECT saldo FROM users WHERE email='"+req.session.email+"'", functio
   else res.sendStatus(401)
 })
 app.get("/user/logout", (req,res)=>{
+  req.session.admin = false;
   req.session.login=false;
   res.redirect("/")
 })
 app.get("/user/account", function(req,res){
-  if(req.session.login) 
+  if(req.session.login && !req.session.admin) 
   {
     con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email), function(err,result){
       if(err){
@@ -463,7 +475,7 @@ app.get("/user/account", function(req,res){
   else res.redirect("/login?src="+url.parse(req.url).pathname)
 })
 app.put("/user/dashboard/change-pin", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
     con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email)+" AND pin=SHA2("+req.body.oldPin+",512)", function(err, result){
       if(err){
         console.log(err)
@@ -489,7 +501,7 @@ app.put("/user/dashboard/change-pin", function(req,res){
   else res.send(401)
 })
 app.put("/user/dashboard/change-pass", function(req,res){
-  if(req.session.login){
+  if(req.session.login && !req.session.admin){
     con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email)+" AND password=SHA2("+req.body.oldPass+",512)", function(err, result){
       if(err){
         console.log(err)
@@ -511,6 +523,48 @@ app.put("/user/dashboard/change-pass", function(req,res){
       }
       else res.send({success: false, msg: "Het oud wachtwoord is niet juist."})
     })
+  }
+  else res.send(401)
+})
+app.get("/admin/dashboard", function(req,res){
+  if(req.session.login&&req.session.admin){
+    res.render(__dirname+"/admincenter.ejs", {username: req.session.username})
+  }
+  else res.redirect("/user/dashboard")
+})
+app.put("/admin/dashboard/change-data-price", function(req,res){
+  if(req.session.login&&req.session.admin){
+    if(!isNaN(req.body.price )&&!isNaN(req.body.data)){
+      con.query("SELECT * FROM dataprijzen WHERE data="+req.body.data+" OR price="+req.body.price+"", function(err, result){
+        if(err){
+          console.log(err)
+          res.send(500)
+        }
+        else if(!result.length){
+          con.query("INSERT INTO dataprijzen VALUES("+req.body.data+", "+req.body.price+") ON DUPLICATE KEY UPDATE data="+req.body.data+", price="+req.body.price, function(err, result){
+            if(err){
+              console.log(err)
+              res.send(500)
+            }
+            else {
+              res.send({success:true})
+            }
+          })
+        }
+        else {
+          con.query("UPDATE dataprijzen SET data="+req.body.data+", price= "+req.body.price+" WHERE data="+req.body.data+" OR price= "+req.body.price, function(err, result){
+            if(err){
+              console.log(err)
+              res.send(500)
+            }
+            else {
+              res.send({success:true})
+            }
+          })
+        }
+      })
+    }
+    else res.send({success:false, msg: "Ongeldige waarden."})
   }
   else res.send(401)
 })

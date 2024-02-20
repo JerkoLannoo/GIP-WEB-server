@@ -184,11 +184,28 @@ function getDataPrices(){
             dataPrices.push(element);//kan weg
         });
         console.log(dataPrices);
+        createDataSelect(dataPrices)
     })
     .catch(err=>{
         console.log(err)
     })
 
+}
+function createDataSelect(data){
+    let element = document.getElementById("normal-data-select")
+    for(let i=0;i<data.length;i++){
+        var opt = document.createElement("option")
+        opt.innerText = data[i].data+"GB"
+        opt.value = data[i].data
+        element.appendChild(opt)
+    }
+    let gElement = document.getElementById("g-data-select")
+    for(let i=0;i<data.length;i++){
+        var opt = document.createElement("option")
+        opt.innerText = data[i].data+"GB"
+        opt.value = data[i].data
+        gElement.appendChild(opt)
+    }
 }
 function calcPrice(input, priceField, type){
     if(document.getElementById("time-new").style.display!=="none"){//tijd optie
