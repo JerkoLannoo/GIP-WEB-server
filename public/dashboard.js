@@ -153,7 +153,7 @@ function getSaldo(){
     fetch("/user/dashboard/get-saldo")
     .then(response=>response.json())
     .then(data=>{
-        document.getElementById("saldo-total").innerText="€"+data[0].saldo
+        document.getElementById("saldo-total").innerText="€"+data[0].saldo.toFixed(2)
     })
     .catch(err=>{
         console.log(err)
@@ -278,6 +278,7 @@ function setCreationType(){
     else createNewData()
 }
 function createNewData(){
+    console.log("creating new data")
     document.getElementById("pop-up-spinner").style.display="block"
     popup.style.display="block"
     popupBackground.style.display="block"

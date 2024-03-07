@@ -150,7 +150,7 @@ app.post("/register/remote-login/send-data", function(req,res){
   console.log("tries: "+req.session.tries)
   for(let i=0; i<50;i++) code+=str.charAt(Math.random()*str.length)
   if(req.session.tries<2){
-    con.query("SELECT * FROM verify WHERE email="+JSON.stringify(data.email)+"; SELECT * FROM users WHERE email="+JSON.stringify(data.email)+" OR bcode="+data.bcode+" OR username='"+data.username+"'", [1,2], function(err, result){
+    con.query("SELECT * FROM verify WHERE email="+JSON.stringify(data.email)+"; SELECT * FROM users WHERE email="+JSON.stringify(data.email)+" OR bcode='"+data.bcode+"' OR username='"+data.username+"'", [1,2], function(err, result){
       if(err) {
         console.log(err)
         res.send(400)
@@ -165,7 +165,7 @@ app.post("/register/remote-login/send-data", function(req,res){
           console.log(username)
           username = username.split(".")[0].substring(0,1).toUpperCase() + username.split(".")[0].substring(1,username.split(".")[0].length) +" " + username.split(".")[1].substring(0,1).toUpperCase() + username.split(".")[1].substring(1,username.split(".")[1].length)
           console.log(username)
-          con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(username)+",SHA2("+JSON.stringify(data.pin)+",512),"+data.bcode+",'"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
+          con.query("INSERT INTO verify VALUES("+JSON.stringify(data.email)+","+JSON.stringify(username)+",SHA2("+JSON.stringify(data.pin)+",512),'"+data.bcode+"','"+code+"',SHA2("+JSON.stringify(data.password)+",512), 0);", function(err, result){
             if(err) {
               console.log(err)
               res.sendStatus(500)
@@ -187,15 +187,15 @@ app.post("/register/remote-login/send-data", function(req,res){
   else res.send({success: false, msg: "Te veel registratie pogingen."})
 })
 app.get("/register/verify-email", function(req,res){
-  con.query("SELECT * FROM verify WHERE BINARY code="+JSON.stringify(req.query.code)+" AND email="+JSON.stringify(req.query.email), function(err, result){
+  con.query("SELECT * FROM verify WHERE BINARY code="+JSON.stringify(req.query.code)+" AND email="+JSON.stringify(req.query.email)+";SELECT * FROM users WHERE email="+JSON.stringify(req.query.email), [1,2], function(err, result){
     console.log(result)
-    console.log("verify len: "+result.length)
+    console.log("verify len: "+result[0].length)
     if(err) {
       console.log(err)
       res.send("Er ging iets mis.")
     }
-    else if(result.length){
-      con.query("INSERT INTO users VALUES ("+JSON.stringify(result[0].username)+","+JSON.stringify(result[0].email)+",'"+result[0].pin+"','"+result[0].password+"',"+result[0].bcode+",0)", function(err){
+    else if(result[0].length&&!result[1].length){
+      con.query("INSERT INTO users VALUES ("+JSON.stringify(result[0][0].username)+","+JSON.stringify(result[0][0].email)+",'"+result[0][0].pin+"','"+result[0][0].password+"','"+result[0][0].bcode+"',0)", function(err){
         if (err) {
           console.log(err)
           res.send("Er ging iets mis.")
@@ -209,6 +209,9 @@ app.get("/register/verify-email", function(req,res){
           console.log(err)
         }
       })*/
+    }
+    else if(result[0].length){
+      res.render(__dirname+"/login.ejs", {status:3, fout:""})
     }
     else{
       setTimeout(() => {
@@ -329,7 +332,7 @@ app.post("/user/dashboard/create-new-time", function(req,res){
            //voor normale apparaten
              var datum = new Date().getTime()
              if(req.body.devices>0&&req.body.gDevices>0){//req.body.devices werkte niet
-               if(req.body.adblock)suffix="-adblock"
+               if(req.body.adblock==="true")suffix="-adblock"
                con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"_"+formatTime(req.body.duration)+suffix+"', '"+req.session.password+
                "', "+req.body.adblock+", NULL);INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast_"+formatTime(req.body.gDuration)+suffix+"', '"+password+"',"+req.body.adblock+", NULL); UPDATE users SET saldo=saldo-"+totprice+" WHERE email='"+req.session.email+"'",[1,2,3], function(err,result){
                  if(err){
@@ -341,7 +344,7 @@ app.post("/user/dashboard/create-new-time", function(req,res){
              }
              else if(req.body.devices>0){
               suffix="_"+formatTime(req.body.duration)
-              if(req.body.adblock) suffix+="-adblock"
+              if(req.body.adblock==="true") suffix+="-adblock"
                con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+","+req.body.duration+",null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+suffix+"', '"+req.session.password+"', "+req.body.adblock+", NULL);UPDATE users SET saldo=saldo-"+(price[0])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
                  if(err){
                   console.log(err)
@@ -352,7 +355,7 @@ app.post("/user/dashboard/create-new-time", function(req,res){
              }
              else if(req.body.gDevices>0){
               suffix="_"+formatTime(req.body.gDuration)
-              if(req.body.adblock) suffix+="-adblock"
+              if(req.body.adblock==="true") suffix+="-adblock"
                con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+","+req.body.gDuration+",null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast"+suffix+"', '"+password+"',"+req.body.adblock+", NULL);UPDATE users SET saldo=saldo-"+(price[1])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
                  if(err){
                   console.log(err)
@@ -386,7 +389,8 @@ app.post("/user/dashboard/create-new-data", function(req,res){
              //voor normale apparaten
                var datum = new Date().getTime()
                if(req.body.devices>0&&req.body.gDevices>0){//req.body.devices werkte niet
-                 if(req.body.adblock)suffix="-adblock"
+                 if(req.body.adblock==="true")suffix="-adblock"
+                 console.log(suffix)
                  con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+",null,null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+"_"+req.body.data+"GB"+suffix+"', '"+req.session.password+
                  "', "+req.body.adblock+", "+req.body.data+");INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+",null,null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast_"+req.body.gData+"GB"+suffix+"', '"+password+"',"+req.body.adblock+", "+req.body.data+"); UPDATE users SET saldo=saldo-"+totprice+" WHERE email='"+req.session.email+"'",[1,2,3], function(err,result){
                    if(err){
@@ -398,7 +402,7 @@ app.post("/user/dashboard/create-new-data", function(req,res){
                }
                else if(req.body.devices>0){
                 suffix="_"+req.body.data+"GB"
-                if(req.body.adblock) suffix+="-adblock"
+                if(req.body.adblock==="true") suffix+="-adblock"
                  con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.devices+",null,null,'"+datum+"',"+price[0]+",0,"+req.body.activationDate+",0,'"+req.session.username+suffix+"', '"+req.session.password+"', "+req.body.adblock+", "+req.body.data+");UPDATE users SET saldo=saldo-"+(price[0])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
                    if(err){
                     console.log(err)
@@ -409,7 +413,7 @@ app.post("/user/dashboard/create-new-data", function(req,res){
                }
                else if(req.body.gDevices>0){
                 suffix="_"+req.body.gData+"GB"
-                if(req.body.adblock) suffix+="-adblock"
+                if(req.body.adblock==="true") suffix+="-adblock"
                  con.query("INSERT INTO beurten VALUES('"+req.session.email+"',"+req.body.gDevices+",null,null,'"+datum+"',"+price[1]+",1,"+req.body.activationDate+",0,'"+req.session.username+"@gast"+suffix+"', '"+password+"',"+req.body.adblock+", "+req.body.data+");UPDATE users SET saldo=saldo-"+(price[1])+" WHERE email='"+req.session.email+"'",[1,2], function(err,result){
                    if(err){
                     console.log(err)
@@ -468,13 +472,13 @@ app.get("/user/account", function(req,res){
         res.send("Er ging iets mis.")
       }
       else if(result.length){
-        res.render(__dirname+"/account.ejs", {username: req.session.username, email: req.session.email, bcode: result[0].bcode, saldo: result[0].saldo})
+        res.render(__dirname+"/account.ejs", {username: req.session.username, email: req.session.email, bcode: result[0].bcode, saldo: result[0].saldo.toFixed(2)})
       }
     })
   } 
   else res.redirect("/login?src="+url.parse(req.url).pathname)
 })
-app.put("/user/dashboard/change-pin", function(req,res){
+app.put("/user/account/change-pin", function(req,res){
   if(req.session.login && !req.session.admin){
     con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email)+" AND pin=SHA2("+req.body.oldPin+",512)", function(err, result){
       if(err){
@@ -500,7 +504,7 @@ app.put("/user/dashboard/change-pin", function(req,res){
   }
   else res.send(401)
 })
-app.put("/user/dashboard/change-pass", function(req,res){
+app.put("/user/account/change-pass", function(req,res){
   if(req.session.login && !req.session.admin){
     con.query("SELECT * FROM users WHERE email="+JSON.stringify(req.session.email)+" AND password=SHA2("+req.body.oldPass+",512)", function(err, result){
       if(err){
@@ -567,6 +571,27 @@ app.put("/admin/dashboard/change-data-price", function(req,res){
     else res.send({success:false, msg: "Ongeldige waarden."})
   }
   else res.send(401)
+})
+app.get("/admin/dashboard/get-all-prices", function(req,res){
+if(req.session.login&&req.session.admin){
+  con.query("SELECT * FROM tijdprijzen; SELECT * FROM dataprijzen;", [1,2], function(err, result){
+    if(err){
+      console.log(err)
+      res.sendStatus(500)
+    }
+    else {
+      res.send({prices: result[0], data:result[1]})
+    }
+  })
+}
+})
+app.get("/admin/logout",function(req,res){
+if(req.session.login&&req.session.admin){
+  req.session.admin = false;
+  req.session.login=false;
+  res.redirect("/")
+}
+else res.redirect("/")
 })
 app.get("/", function(req,res){
   if(req.session.login)   res.redirect("/user/dashboard")

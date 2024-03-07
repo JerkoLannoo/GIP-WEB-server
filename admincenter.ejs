@@ -13,6 +13,25 @@
         <a href="" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
     <div id="main">
+        <div id="info-pop-up" style="display: none;">
+            <br>
+            <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="info-pop-up-spinner"></i>
+            <label for="info-pop-up-price">Nieuwe prijs (EUR):</label>
+            <input id="info-pop-up-price" type="number" min="0"></input>
+            <div id="info-pop-up-price">
+                <label for="info-pop-up-amount">Nieuwe prijs (GB):</label>
+                <input type="number" min="0" id="info-pop-up-amount">
+                <select name="" id="">
+                    <option value="">h</option>
+                    <option value="">d</option>
+                    <option value="">m</option>
+                </select>
+            </div>
+            <br>
+            <button style="margin: auto;" onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn">Sluiten</button>
+            <button id="price-submit-button">Wijzigen</button>
+            <br><br>
+        </div>
         <div  id="pop-up"  style="display: none;"  >
             <section style="width: 100%; background-color: lightgray; height: 25px; position: absolute;"><!--dit is een section omdat js alle divs in het begin verwijdert-->
                 <i class="fa-solid fa-info" style="left: 10px; top: 5px; position: absolute;"></i>
@@ -31,8 +50,18 @@
             <h1>GIP instellingen</h1>
             <hr>
             <h2>Prijzen</h2>
-            
             <h3>Data prijs </h3>
+            <div id="data-prices-container">
+                <p id="data-prices-container-info"></p>
+                <table style="width: 100%;">
+                    <thead>
+                        <th>Data</th>
+                        <th>Prijs</th>
+                        <th>Wijzigen</th>
+                    </thead>
+                    <tbody id="data-prices-body"></tbody>
+                </table>
+            </div>
             <label for="data" class="name-el">Data in GB: </label>
             <input type="number" name="" id="data" class="value-el" style="width: 50px;" step="1" min="1">
             <br>
@@ -65,10 +94,55 @@
         </div>
     </div>
     <script>
+var infoPopup = document.getElementById("info-pop-up")
 var popupInfo=document.getElementById("pop-up-info")
 var popup = document.getElementById("pop-up")
 var popupBackground=document.getElementById("pop-up-background")
 var popupBtn = document.getElementById("pop-up-btn")
+var prices;
+getAllPrices()
+function getAllPrices(){
+    fetch("/admin/dashboard/get-all-prices")
+    .then(response=>response.json())
+    .then(data=>{
+        console.log(data)
+        prices=data
+        createPricesChart()
+    }).catch(err=>{
+        console.log(err)
+        document.getElementById("data-prices-container-info").innerText="Er ging iets mis."
+    })
+}
+function createPricesChart(){
+let element = document.getElementById("data-prices-body")
+for(let i=0; i<prices.data.length;i++){
+    let pricerow = document.createElement("tr")
+    let priceRowAmount = document.createElement("td")
+    priceRowAmount.innerText = prices.data[i].data+" GB"
+    pricerow.appendChild(priceRowAmount)
+    let priceRowPrice = document.createElement("td")
+    priceRowPrice.innerText = prices.data[i].price + "€"
+    pricerow.appendChild(priceRowPrice)
+    let wijzigen = document.createElement("td")
+    let wijzigenKnop = document.createElement("button")
+    wijzigenKnop.setAttribute("class", "wijzigenknop")
+    wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
+    wijzigenKnop.innerText = "Wijzigen"
+    wijzigen.appendChild(wijzigenKnop)
+    pricerow.appendChild(wijzigen)
+    element.appendChild(pricerow)
+}
+}
+function showPricePopup(index, type){
+infoPopup.style.display="block"
+document.getElementById("pop-up-background").style.display="block"
+if(type==="data"){
+    document.getElementById("info-pop-up-data").style.display="block"
+    document.getElementById("info-pop-up-price").innerText = prices.data[i].price+"€"
+    document.getElementById("info-pop-up-amount").innerText = prices.data[i].price+"€"
+}
+
+}
         function changeDataPrice(){
                 popup.style.display="block"
                 popupBackground.style.display="block"
@@ -149,19 +223,24 @@ var popupBtn = document.getElementById("pop-up-btn")
         }
     </script>
     <style>
-        .settings{
-            position: relative;
-    margin-top: 25px !important;
-    box-shadow: 3px 3px 0px 0px;
-    display: block;
-    margin: auto;
-    border: 1px solid black;
-    border-radius: 5px;
-    width: 700px;
-        }
-        p, label{
-            font-size: 14pt;
-        }
+table td{
+    text-align: center;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
+}
+.settings{
+position: relative;
+margin-top: 25px !important;
+box-shadow: 3px 3px 0px 0px;
+display: block;
+margin: auto;
+border: 1px solid black;
+border-radius: 5px;
+width: 700px;
+}
+p, label{
+font-size: 14pt;
+}
 #pop-up{
 text-align: center !important;
 animation: popupanimation 0.3s;
@@ -279,7 +358,19 @@ input:valid{
 border-bottom:2px solid green;
 box-shadow: none;
 }
-
+#info-pop-up{
+animation: infopupopanimation 0.3s;
+background-color: white;
+position: absolute;
+border-radius: 15px;
+border: 2px solid gray;
+z-index: 6;
+top: 25%;
+left: 50%;
+margin-top: -50px;
+margin-left: -192px;
+width: 375px;
+}
 @media only screen and (max-device-width: 1000px)  {
         body{
             width: 100%;
