@@ -539,33 +539,14 @@ app.get("/admin/dashboard", function(req,res){
 app.put("/admin/dashboard/change-data-price", function(req,res){
   if(req.session.login&&req.session.admin){
     if(!isNaN(req.body.price )&&!isNaN(req.body.data)){
-      con.query("SELECT * FROM dataprijzen WHERE data="+req.body.data+" OR price="+req.body.price+"", function(err, result){
+      con.query("UPDATE dataprijzen SET price="+req.body.price+" WHERE data="+req.body.data, function(err){
         if(err){
           console.log(err)
           res.send(500)
         }
-        else if(!result.length){
-          con.query("INSERT INTO dataprijzen VALUES("+req.body.data+", "+req.body.price+") ON DUPLICATE KEY UPDATE data="+req.body.data+", price="+req.body.price, function(err, result){
-            if(err){
-              console.log(err)
-              res.send(500)
-            }
-            else {
-              res.send({success:true})
-            }
-          })
-        }
         else {
-          con.query("UPDATE dataprijzen SET data="+req.body.data+", price= "+req.body.price+" WHERE data="+req.body.data+" OR price= "+req.body.price, function(err, result){
-            if(err){
-              console.log(err)
-              res.send(500)
-            }
-            else {
               res.send({success:true})
             }
-          })
-        }
       })
     }
     else res.send({success:false, msg: "Ongeldige waarden."})
@@ -580,7 +561,7 @@ if(req.session.login&&req.session.admin){
       res.sendStatus(500)
     }
     else {
-      res.send({prices: result[0], data:result[1]})
+      res.send({time: result[0], data:result[1]})
     }
   })
 }

@@ -13,19 +13,24 @@
         <a href="" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
     <div id="main">
-        <div id="info-pop-up" style="display: none;">
+        <div id="info-pop-up" style="display: none; padding: 10px;">
             <br>
+            <input type="hidden" name="" id="data-amount-hidden">
             <i class="fas fa-circle-notch fa-spin" style="font-size:24px; top: 30px; margin: auto; position: relative; display: none; margin-bottom: 35px;" id="info-pop-up-spinner"></i>
-            <label for="info-pop-up-price">Nieuwe prijs (EUR):</label>
-            <input id="info-pop-up-price" type="number" min="0"></input>
-            <div id="info-pop-up-price">
-                <label for="info-pop-up-amount">Nieuwe prijs (GB):</label>
-                <input type="number" min="0" id="info-pop-up-amount">
-                <select name="" id="">
-                    <option value="">h</option>
-                    <option value="">d</option>
-                    <option value="">m</option>
+            <label for="info-pop-up-price" class="name-el">Nieuwe prijs (EUR):</label>
+            <input id="info-pop-up-price" type="number" min="0" value="0" step="0.01" class="value-el" style="width: 50px;"></input>
+            <br>
+            <p id="info-pop-up-data" class="name-el" style="font-size: 14pt;"></p>
+            <div id="info-pop-up-time">
+                <label for="info-pop-up-amount" class="name-el" >Nieuwe tijd:</label>
+                <span  class="value-el" >
+                    <input type="number" value="1"name="" id="g-duration" value="1" min="1" max="30" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')" style="width: 50px;">&ensp;
+                    <select name="" id="g-duration-select" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')">
+                    <option value="1">Uur</option>
+                    <option value="24">Dag(en)</option>
+                    <option value="720">Maand(en)</option>
                 </select>
+            </span>
             </div>
             <br>
             <button style="margin: auto;" onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn">Sluiten</button>
@@ -62,30 +67,19 @@
                     <tbody id="data-prices-body"></tbody>
                 </table>
             </div>
-            <label for="data" class="name-el">Data in GB: </label>
-            <input type="number" name="" id="data" class="value-el" style="width: 50px;" step="1" min="1">
-            <br>
-            <br>
-            <label for="data-price" class="name-el">Prijs in EUR: </label>
-            <input type="number" name="" id="data-price" step="0.01" style="width: 50px;" class="value-el" min="0">
-            <br><br>
-            <button class="name-el" onclick="changeDataPrice()">Updaten</button>
             <h3>Tijd prijs </h3>
-                <label for="" class="name-el">Tijd: </label>
-                <span class="value-el">
-                <input type="number" name="" id="" style="width: 50px;" step="1" min="1">
-                <select name="" id="">
-                    <option value="1">Uur</option>
-                    <option value="24">Dag(en)</option>
-                    <option value="720">Maand(en)</option>
-                </select>
-            </span>
-            <br>
-            <br>
-            <label for="" class="name-el">Prijs in EUR: </label>
-            <input type="number" name="" id="" step="0.01" style="width: 50px;" class="value-el" min="0">
-            <br><br>
-            <button class="name-el">Updaten</button>
+            <div id="time-prices-container">
+                <p id="time-prices-container-info"></p>
+                <table style="width: 100%;">
+                    <thead>
+                        <th>Duratief</th>
+                        <th>Prijs</th>
+                        <th>Wijzigen</th>
+                    </thead>
+                    <tbody id="time-prices-body"></tbody>
+                </table>
+            </div>
+            <button onclick="showPricePopup(0, 'newtime')" style="margin: auto;">Nieuw</button>
              <p class="name-el">
                 <b>Opmerking: bij het ingeven van bestaande gegevens worden de bestaande gegevens overschreven.</b>
              </p>
@@ -115,6 +109,7 @@ function getAllPrices(){
 }
 function createPricesChart(){
 let element = document.getElementById("data-prices-body")
+element.innerHTML=""
 for(let i=0; i<prices.data.length;i++){
     let pricerow = document.createElement("tr")
     let priceRowAmount = document.createElement("td")
@@ -132,18 +127,50 @@ for(let i=0; i<prices.data.length;i++){
     pricerow.appendChild(wijzigen)
     element.appendChild(pricerow)
 }
+element = document.getElementById("time-prices-body")
+element.innerHTML=""
+for(let i=0; i<prices.time.length;i++){
+    let pricerow = document.createElement("tr")
+    let priceRowAmount = document.createElement("td")
+    priceRowAmount.innerText = prices.time[i].time+"h"
+    pricerow.appendChild(priceRowAmount)
+    let priceRowPrice = document.createElement("td")
+    priceRowPrice.innerText = prices.time[i].price + "€"
+    pricerow.appendChild(priceRowPrice)
+    let wijzigen = document.createElement("td")
+    let wijzigenKnop = document.createElement("button")
+    wijzigenKnop.setAttribute("class", "wijzigenknop")
+    wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'time')")
+    wijzigenKnop.innerText = "Wijzigen"
+    wijzigen.appendChild(wijzigenKnop)
+    pricerow.appendChild(wijzigen)
+    element.appendChild(pricerow)
+}
 }
 function showPricePopup(index, type){
 infoPopup.style.display="block"
 document.getElementById("pop-up-background").style.display="block"
 if(type==="data"){
-    document.getElementById("info-pop-up-data").style.display="block"
-    document.getElementById("info-pop-up-price").innerText = prices.data[i].price+"€"
-    document.getElementById("info-pop-up-amount").innerText = prices.data[i].price+"€"
+    document.getElementById("info-pop-up-time").style.display = "none"
+    document.getElementById("price-submit-button").removeAttribute("onclick")
+    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';changeDataPrice()")
+    document.getElementById("info-pop-up-data").innerText = "Data: "+prices.data[index].data + " GB"
+    document.getElementById("info-pop-up-data").style.display = "block"
+    document.getElementById("data-amount-hidden").value = prices.data[index].data
 }
-
+else if(type==="time"){
+    document.getElementById("info-pop-up-data").style.display = "none"
+    document.getElementById("info-pop-up-time").style.display = "none"
+    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';")
+}
+else{
+    document.getElementById("info-pop-up-data").style.display = "none"
+    document.getElementById("info-pop-up-time").style.display = "block"
+    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';")
+}
 }
         function changeDataPrice(){
+                console.log("hidden input value: "+document.getElementById("data-amount-hidden").value)
                 popup.style.display="block"
                 popupBackground.style.display="block"
                 popupInfo.innerText="Wacht even..."
@@ -151,8 +178,8 @@ if(type==="data"){
                 const xhr = new XMLHttpRequest();
                 xhr.open("PUT", "/admin/dashboard/change-data-price", true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                var data = "data="+document.getElementById("data").value+"&"
-                +"price="+document.getElementById("data-price").value
+                var data = "data="+document.getElementById("data-amount-hidden").value+"&"
+                +"price="+document.getElementById("info-pop-up-price").value
                 xhr.send(data)
                 xhr.onreadystatechange = () => {
                     document.getElementById("pop-up-spinner").style.display="none"
@@ -161,6 +188,7 @@ if(type==="data"){
                     if(response.success){
                      popupInfo.style.color="black"
                      popupInfo.innerText="De data prijzen zijn geüpdatet."
+                     getAllPrices();
                     }
                     else{
                 popupInfo.style.color="red"
