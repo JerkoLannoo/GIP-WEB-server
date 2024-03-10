@@ -8,7 +8,8 @@
 <body>
     
     <div id="topnav">
-        <span class="selection-buttons"><i class="fa-solid fa-house"></i> Home</span>
+        <a class="selection-buttons" style="background-color:#4294ff" onclick="showTab(document.getElementById('settings'), this);"><i class="fa-solid fa-gear"></i> Instellingen</a>
+        <a class="selection-buttons" onclick="showTab(document.getElementById('users'), this);"><i class="fa-solid fa-users"></i> Gebruikers</a>
         <a href="/admin/logout" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-right-from-bracket"></i>Log uit</a>
         <a href="" class="selection-buttons" style="float: right !important;"><i class="fa-solid fa-user"></i><%-username%></a>
     </div>
@@ -24,18 +25,17 @@
             <div id="info-pop-up-time">
                 <label for="info-pop-up-amount" class="name-el" >Nieuwe tijd:</label>
                 <span  class="value-el" >
-                    <input type="number" value="1"name="" id="g-duration" value="1" min="1" max="30" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')" style="width: 50px;">&ensp;
-                    <select name="" id="g-duration-select" onchange="calcPrice(document.getElementById('g-devices'), document.getElementById('g-price'), 'g')">
+                    <input type="number" value="1"name="duration" id="duration" value="1" min="1" max="30" style="width: 50px;">&ensp;
+                    <select name="" id="duration-select">
                     <option value="1">Uur</option>
                     <option value="24">Dag(en)</option>
                     <option value="720">Maand(en)</option>
                 </select>
             </span>
             </div>
+            <button style="margin: auto; margin-top: 10px;" onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="info-pop-up-btn">Sluiten</button>
+            <button id="price-submit-button" style="margin-top: 10px;">Wijzigen</button>
             <br>
-            <button style="margin: auto;" onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="pop-up-btn">Sluiten</button>
-            <button id="price-submit-button">Wijzigen</button>
-            <br><br>
         </div>
         <div  id="pop-up"  style="display: none;"  >
             <section style="width: 100%; background-color: lightgray; height: 25px; position: absolute;"><!--dit is een section omdat js alle divs in het begin verwijdert-->
@@ -51,12 +51,12 @@
 
         <div id="pop-up-background" style="display: none;" >
         </div>
-        <div class="settings">
+        <div class="main-window" id="settings">
             <h1>GIP instellingen</h1>
             <hr>
             <h2>Prijzen</h2>
             <h3>Data prijs </h3>
-            <div id="data-prices-container">
+            <section id="data-prices-container">
                 <p id="data-prices-container-info"></p>
                 <table style="width: 100%;">
                     <thead>
@@ -66,9 +66,9 @@
                     </thead>
                     <tbody id="data-prices-body"></tbody>
                 </table>
-            </div>
+            </section>
             <h3>Tijd prijs </h3>
-            <div id="time-prices-container">
+            <section id="time-prices-container">
                 <p id="time-prices-container-info"></p>
                 <table style="width: 100%;">
                     <thead>
@@ -78,13 +78,46 @@
                     </thead>
                     <tbody id="time-prices-body"></tbody>
                 </table>
-            </div>
-            <button onclick="showPricePopup(0, 'newtime')" style="margin: auto;">Nieuw</button>
-             <p class="name-el">
-                <b>Opmerking: bij het ingeven van bestaande gegevens worden de bestaande gegevens overschreven.</b>
-             </p>
+            </section>
+            <button onclick="showPricePopup(0, 'newtime')" style="margin-top: 10px;">Nieuw</button>
             <hr>
-            <h2>Netwerkinstellingen</h2>
+            <h2>Netwerk instellingen</h2>
+            <label for="max-users" class="name-el" >Maximum gebruikers op netwerk:</label>
+            <input type="number" name="" id="max-users" class="value-el" style="width: 50px;" min="0">
+            <br><br>
+            <label for="max-beurten" class="name-el">Maximum beurten per gebruiker:</label>
+            <input type="number" name="" id="max-beurten" class="value-el" style="width: 50px;" min="0">
+            <br><br>
+            <label for="max-saldo" class="name-el">Maximum saldo per gebruiker (EUR):</label>
+            <input type="number" name="" id="max-saldo" class="value-el" style="width: 50px;" min="0">
+            <br><br>
+            <input type="checkbox" name="" id="allow-new-logins" class="name-el">
+            <label for="allow-new-logins" style="margin-left: 25px !important; " class="name-el">Nieuwe logins toestaan</label>
+            <br><br>
+            <input type="checkbox" name="" id="allow-new-beurten" class="name-el">
+            <label for="allow-new-beurten" style="margin-left: 25px !important; " class="name-el">Nieuwe beurten aanmaken toestaan</label>
+            <br>
+            <br>
+            <button onclick="changeNetworkSettings()">Wijzigingen opslaan</button>
+            <br><br>
+        </div>
+        <div id="users" class="main-window" style="display: none;">
+            <h1>GIP gebruikers</h1>
+            <hr>
+            <p id="users-info" style="color: red;"></p>
+            <input type="text" placeholder="Gebruikers zoeken..." style="font-size: large; width: 90%; margin: auto;">
+            <br>
+            <br>
+            <table style="width: 100%;">
+                <thead>
+                    <th>Gebruikersnaam</th>
+                    <th>E-mail</th>
+                    <th>Wijzigen</th>
+                </thead>
+                <tbody id="user-table-body">
+
+                </tbody>
+            </table>
         </div>
     </div>
     <script>
@@ -94,7 +127,23 @@ var popup = document.getElementById("pop-up")
 var popupBackground=document.getElementById("pop-up-background")
 var popupBtn = document.getElementById("pop-up-btn")
 var prices;
+var users;
+var settings;
 getAllPrices()
+getAllUsers()
+getAllSettings()
+function getAllUsers(){
+    fetch("/admin/dashboard/get-all-users")
+    .then(response=>response.json())
+    .then(data=>{
+        console.log(data)
+        users=data
+        createUserChart()
+    }).catch(err=>{
+        console.log(err)
+        document.getElementById("users-info").innerText="Er ging iets mis. Kon niet alle gebruikers ophalen."
+    })
+}
 function getAllPrices(){
     fetch("/admin/dashboard/get-all-prices")
     .then(response=>response.json())
@@ -104,8 +153,88 @@ function getAllPrices(){
         createPricesChart()
     }).catch(err=>{
         console.log(err)
-        document.getElementById("data-prices-container-info").innerText="Er ging iets mis."
+        document.getElementById("data-prices-container-info").style.color="red"
+        document.getElementById("data-prices-container-info").innerText="Er ging iets mis. Kon niet alle prijzen ophalen."
     })
+}
+function getAllSettings() {
+    fetch("/admin/dashboard/get-all-settings")
+    .then(response=>response.json())
+    .then(data=>{
+        console.log(data)
+        settings=data
+        document.getElementById("max-users").value = data[0].max_users
+        document.getElementById("max-beurten").value = data[0].max_beurten
+        document.getElementById("max-saldo").value = data[0].max_saldo
+        document.getElementById("allow-new-logins").checked = data[0].allow_logins
+        document.getElementById("allow-new-beurten").checked = data[0].allow_new
+    }).catch(err=>{
+        console.log(err)
+        document.getElementById("data-prices-container-info").style.color="red"
+        document.getElementById("data-prices-container-info").innerText="Er ging iets mis. Kon niet alle netwerk instellingen ophalen."
+    })
+}
+function changeNetworkSettings(){
+    popup.style.display="block"
+        popupBackground.style.display="block"
+        popupInfo.innerText="Wacht even..."
+        document.getElementById("pop-up-spinner").style.display="block"
+    const xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/admin/dashboard/change-network-settings", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        var data = "maxUsers="+document.getElementById("max-users").value
+        +"&maxBeurten="+document.getElementById("max-beurten").value
+        +"&maxSaldo="+document.getElementById("max-saldo").value
+        +"&allowNewLogins="+document.getElementById("allow-new-logins").checked
+        +"&allowNewBeurten="+document.getElementById("allow-new-beurten").checked
+        xhr.send(data)
+        xhr.onreadystatechange = () => {
+        document.getElementById("pop-up-spinner").style.display="none"
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText="De instellingen zijn aangepast."
+                     getAllSettings()
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                }
+}
+function createUserChart(){
+let element = document.getElementById("user-table-body")
+element.innerHTML=""
+for(let i=0; i<users.length;i++){
+    let userRow = document.createElement("tr")
+    let userRowUsername = document.createElement("td")
+    userRowUsername.innerText = users[i].username
+    userRow.appendChild(userRowUsername)
+    let userRowEmail = document.createElement("td")
+    userRowEmail.innerText = users[i].email
+    userRow.appendChild(userRowEmail)
+    let wijzigen = document.createElement("td")
+    let wijzigenKnop = document.createElement("button")
+    wijzigenKnop.setAttribute("class", "wijzigenknop")
+   // wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
+    wijzigenKnop.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>'
+    wijzigen.appendChild(wijzigenKnop)
+    let infoKnop = document.createElement("button")
+    infoKnop.setAttribute("class", "wijzigenknop")
+   // wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
+    infoKnop.innerHTML = '<i class="fa-solid fa-info"></i>'
+    wijzigen.appendChild(infoKnop)
+    userRow.appendChild(wijzigen)
+    element.appendChild(userRow)
+}
 }
 function createPricesChart(){
 let element = document.getElementById("data-prices-body")
@@ -122,7 +251,7 @@ for(let i=0; i<prices.data.length;i++){
     let wijzigenKnop = document.createElement("button")
     wijzigenKnop.setAttribute("class", "wijzigenknop")
     wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
-    wijzigenKnop.innerText = "Wijzigen"
+    wijzigenKnop.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>'
     wijzigen.appendChild(wijzigenKnop)
     pricerow.appendChild(wijzigen)
     element.appendChild(pricerow)
@@ -132,7 +261,7 @@ element.innerHTML=""
 for(let i=0; i<prices.time.length;i++){
     let pricerow = document.createElement("tr")
     let priceRowAmount = document.createElement("td")
-    priceRowAmount.innerText = prices.time[i].time+"h"
+    priceRowAmount.innerText = formatTime(prices.time[i].time)
     pricerow.appendChild(priceRowAmount)
     let priceRowPrice = document.createElement("td")
     priceRowPrice.innerText = prices.time[i].price + "€"
@@ -141,8 +270,15 @@ for(let i=0; i<prices.time.length;i++){
     let wijzigenKnop = document.createElement("button")
     wijzigenKnop.setAttribute("class", "wijzigenknop")
     wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'time')")
-    wijzigenKnop.innerText = "Wijzigen"
+    wijzigenKnop.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>'
     wijzigen.appendChild(wijzigenKnop)
+    let delKnop = document.createElement("button")
+    delKnop.setAttribute("class", "delKnop")
+    delKnop.style.backgroundColor = "red"
+    delKnop.style.borderColor = "red"
+    delKnop.innerHTML = '<i class="fa-solid fa-trash-can"></i>'
+    delKnop.setAttribute("onclick", "deleteBeurt("+prices.time[i].price+", "+prices.time[i].time+", 'time')")
+    wijzigen.appendChild(delKnop)
     pricerow.appendChild(wijzigen)
     element.appendChild(pricerow)
 }
@@ -161,13 +297,72 @@ if(type==="data"){
 else if(type==="time"){
     document.getElementById("info-pop-up-data").style.display = "none"
     document.getElementById("info-pop-up-time").style.display = "none"
-    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';")
+    document.getElementById("data-amount-hidden").value = prices.time[index].time
+    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';changeTimePrice()")
 }
 else{
     document.getElementById("info-pop-up-data").style.display = "none"
     document.getElementById("info-pop-up-time").style.display = "block"
-    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';")
+    document.getElementById("price-submit-button").setAttribute("onclick", "this.parentElement.style.display='none';addTime()")
 }
+}
+function deleteBeurt(price, amount, type){
+        popup.style.display="block"
+        popupBackground.style.display="block"
+        popupInfo.innerText="Wacht even..."
+        document.getElementById("pop-up-spinner").style.display="block"
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/admin/dashboard/delete-time-beurt", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        var data = "time="+amount+"&"
+        +"price="+price
+        xhr.send(data)
+        xhr.onreadystatechange = () => {
+        document.getElementById("pop-up-spinner").style.display="none"
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText="Deze beurt is verwijderd."
+                     getAllPrices();
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                }
+}
+function formatTime(time){
+   // console.log("time: "+time)
+    if(time<24) return time +"h"
+    else if(time>=24&&time<720) {
+        console.log("tijd groter dan 24: "+time/24+time%24)
+        if(time/24>1) return (time/24)+" Dagen"
+        else return "1 Dag"
+    }
+    else if(time>=720) {
+        console.log("tijd groter dan 24")
+        if(time/720>1) return (time/720)+" Maanden"
+        else return "1 Maand"
+    }
+}
+function showTab(el, btn){
+    for(let i=0;i<document.getElementById("main").querySelectorAll("div").length;i++) {
+        document.getElementById("main").querySelectorAll("div")[i].style.display="none"
+    } 
+    for(let i=0;i<document.getElementById("topnav").querySelectorAll("a").length;i++) {
+        document.getElementById("topnav").querySelectorAll("a")[i].style.backgroundColor="#036ffc"
+    } 
+    el.style.display="block"
+    btn.style.backgroundColor="#4294ff"
+    if(el.id=="saldo") document.getElementById("keuzemenu-bar").style.display="none"
 }
         function changeDataPrice(){
                 console.log("hidden input value: "+document.getElementById("data-amount-hidden").value)
@@ -188,6 +383,72 @@ else{
                     if(response.success){
                      popupInfo.style.color="black"
                      popupInfo.innerText="De data prijzen zijn geüpdatet."
+                     getAllPrices();
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                }
+        }
+        function changeTimePrice(){
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.innerText="Wacht even..."
+                document.getElementById("pop-up-spinner").style.display="block"
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", "/admin/dashboard/change-time-price", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                var data = "time="+document.getElementById("data-amount-hidden").value+"&"
+                +"price="+document.getElementById("info-pop-up-price").value
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                    document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText="De tijd prijzen zijn geüpdatet."
+                     getAllPrices();
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                }
+        }
+        function addTime(){
+                popup.style.display="block"
+                popupBackground.style.display="block"
+                popupInfo.innerText="Wacht even..."
+                document.getElementById("pop-up-spinner").style.display="block"
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", "/admin/dashboard/add-time", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                var data = "time="+document.getElementById("duration").value*document.getElementById("duration-select").value+"&"
+                +"price="+document.getElementById("info-pop-up-price").value
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                    document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText="De tijd prijzen zijn geüpdatet."
                      getAllPrices();
                     }
                     else{
@@ -251,12 +512,22 @@ else{
         }
     </script>
     <style>
+.delKnop:hover{
+    transition-duration: 0.4s;
+background-color: purple !important;
+border-color: purple !important;
+}
 table td{
     text-align: center;
-    border-bottom: 1px solid gray;
-    border-top: 1px solid gray;
 }
-.settings{
+table, th, td {
+    border-collapse: collapse;
+}
+tbody tr:nth-child(odd) {
+    background-color: #bababa;
+}
+.main-window{
+text-align: center;
 position: relative;
 margin-top: 25px !important;
 box-shadow: 3px 3px 0px 0px;
@@ -342,14 +613,16 @@ p{
    } 
 }
 .name-el{
-    margin-left: 20px;
-    text-align: left;
+    position: absolute;
+    left: 20px !important;
+    text-align: left !important;
 }
 .value-el{
-    position: absolute;
-    left: 50%;
+    position: absolute !important;
+    left: 50% !important;
 }
 button{
+    margin: 2px;
     cursor: pointer;
     font-size: 13pt;
     border-radius: 5px;

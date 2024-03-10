@@ -213,11 +213,10 @@ function calcPrice(input, priceField, type){
     if(type==="n"){//normaal
         if(input.value>0){
             for(let i=prices.length-1;i>=0;i--){
-                if(prices[i].devices<=input.value&&prices[i].time<=document.getElementById("duration").value*document.getElementById("normal-duration-select").value) {
+                if(prices[i].time<=document.getElementById("duration").value*document.getElementById("normal-duration-select").value) {
                     console.log(prices)
-                    priceField.innerText=(prices[i].price*input.value*document.getElementById("duration").value*document.getElementById("normal-duration-select").value).toFixed(2);
+                    priceField.innerText=(prices[i].price*input.value*document.getElementById("duration").value*document.getElementById("normal-duration-select").value/prices[i].time).toFixed(2);
                     console.log("price: "+prices[i].price.toFixed(2))
-                    break
                 }
             }
         }
@@ -226,11 +225,10 @@ function calcPrice(input, priceField, type){
     else{//gast
         if(input.value>0) {
             for(let i=prices.length-1;i>=0;i--){
-                if(prices[i].devices<=input.value&&prices[i].time<=document.getElementById("g-duration").value*document.getElementById("g-duration-select").value) {
+                if(prices[i].time<=document.getElementById("g-duration").value*document.getElementById("g-duration-select").value) {
                     console.log(prices)
-                    priceField.innerText=(prices[i].price*input.value*document.getElementById("g-duration").value*document.getElementById("g-duration-select").value).toFixed(2);
+                    priceField.innerText=(prices[i].price*input.value*document.getElementById("g-duration").value*document.getElementById("g-duration-select").value/prices[i].time).toFixed(2);
                     console.log("price: "+prices[i].price.toFixed(2))
-                    break
                 }
             }
         }

@@ -534,12 +534,74 @@ app.get("/admin/dashboard", function(req,res){
   if(req.session.login&&req.session.admin){
     res.render(__dirname+"/admincenter.ejs", {username: req.session.username})
   }
-  else res.redirect("/user/dashboard")
+  else res.redirect("/login")
 })
 app.put("/admin/dashboard/change-data-price", function(req,res){
   if(req.session.login&&req.session.admin){
     if(!isNaN(req.body.price )&&!isNaN(req.body.data)){
       con.query("UPDATE dataprijzen SET price="+req.body.price+" WHERE data="+req.body.data, function(err){
+        if(err){
+          console.log(err)
+          res.send(500)
+        }
+        else {
+              res.send({success:true})
+            }
+      })
+    }
+    else res.send({success:false, msg: "Ongeldige waarden."})
+  }
+  else res.send(401)
+})
+app.put("/admin/dashboard/change-time-price", function(req,res){
+  if(req.session.login&&req.session.admin){
+    if(!isNaN(req.body.price )&&!isNaN(req.body.time)){
+      con.query("UPDATE tijdprijzen SET price="+req.body.price+" WHERE time="+req.body.time, function(err){
+        if(err){
+          console.log(err)
+          res.send(500)
+        }
+        else {
+              res.send({success:true})
+            }
+      })
+    }
+    else res.send({success:false, msg: "Ongeldige waarden."})
+  }
+  else res.send(401)
+})
+app.put("/admin/dashboard/add-time", function(req,res){
+  if(req.session.login&&req.session.admin){
+    if(!isNaN(req.body.price )&&!isNaN(req.body.time)){
+      con.query("SELECT * FROM tijdprijzen WHERE time="+req.body.time, function(err, result){
+        if(err){
+          console.log(err)
+          res.send(500)
+        }
+        else if(!result.length){
+          con.query("INSERT INTO tijdprijzen VALUES("+req.body.time+", "+req.body.price+",1)", function(err){
+            if(err){
+              console.log(err)
+              res.send(500)
+            }
+            else {
+                  res.send({success:true})
+                }
+          })
+          }
+          else{
+            res.send({success:false, msg:"Deze tijd bestaat al!"})
+          }
+      })
+    }
+    else res.send({success:false, msg: "Ongeldige waarden."})
+  }
+  else res.send(401)
+})
+app.put("/admin/dashboard/delete-time-beurt", function(req,res){
+  if(req.session.login&&req.session.admin){
+    if(!isNaN(req.body.price )&&!isNaN(req.body.time)){
+      con.query("DELETE FROM tijdprijzen WHERE time="+req.body.time, function(err){
         if(err){
           console.log(err)
           res.send(500)
@@ -565,6 +627,49 @@ if(req.session.login&&req.session.admin){
     }
   })
 }
+else res.sendStatus(401)
+})
+app.get("/admin/dashboard/get-all-users", function(req,res){
+  if(req.session.login&&req.session.admin){
+    con.query("SELECT email, username FROM users", function(err, result){
+      if(err){
+        console.log(err)
+        res.sendStatus(500)
+      }
+      else {
+        res.send(result)
+      }
+    })
+  }
+else res.sendStatus(401)
+})
+app.get("/admin/dashboard/get-all-settings", function(req,res){
+  if(req.session.login&&req.session.admin){
+    con.query("SELECT * FROM settings", function(err, result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else {
+        res.send(result)
+      }
+    })
+  }
+else res.sendStatus(401)
+})
+app.put("/admin/dashboard/change-network-settings", function(req,res){
+  if(req.session.login&&req.session.admin){
+    con.query("UPDATE settings SET max_users="+req.body.maxUsers+", max_beurten="+req.body.maxBeurten+", max_saldo="+req.body.maxSaldo+", allow_logins="+req.body.allowNewLogins+", allow_new="+req.body.allowNewBeurten+"", function(err, result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else {
+        res.send({success:true})
+      }
+    })
+  }
+else res.send(401)
 })
 app.get("/admin/logout",function(req,res){
 if(req.session.login&&req.session.admin){
