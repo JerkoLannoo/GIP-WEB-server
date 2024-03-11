@@ -319,9 +319,9 @@ app.get("/user/dashboard/get-data-prices", function(req,res){
 })
 app.post("/user/dashboard/create-new-time", function(req,res){
   if(req.session.login && !req.session.admin){
-    con.query("SELECT * FROM tijdprijzen; SELECT saldo FROM users WHERE email='"+req.session.email+"';SELECT allow_new FROM settings;",[1,2,3], function(err ,result){
+    con.query("SELECT * FROM tijdprijzen; SELECT saldo FROM users WHERE email='"+req.session.email+"';SELECT * FROM settings; SELECT * FROM beurten WHERE email='"+req.session.email+"' AND used<devices",[1,2,3,4], function(err ,result){
       if(err) console.log(err)
-      else if(result.length&&result[2][0].allow_new){ 
+      else if(result.length&&result[2][0].allow_new&&result[3].length<result[2][0].max_beurten){ 
        let price= calcPrice(result[0], req.body)
        let str = "0123456789azeretyuiopqsdfghjklmwxcvbn"
        let password=""
@@ -370,6 +370,7 @@ app.post("/user/dashboard/create-new-time", function(req,res){
        else res.send({success:false, msg: "Niet genoeg saldo."})
     }
     else if(!result[2][0].allow_new) res.send({success:false, msg: "Het is momenteel niet mogelijk nieuwe beurten aan te maken."})
+    else if(result[3].length>=result[2][0].max_beurten) res.send({success:false, msg: "Je hebt het maximum aantal beurten bereikt."})
     else res.send({success:false, msg: "Er ging iets mis."})
     })
   }
@@ -377,9 +378,9 @@ app.post("/user/dashboard/create-new-time", function(req,res){
 })
 app.post("/user/dashboard/create-new-data", function(req,res){
   if(req.session.login){
-    con.query("SELECT * FROM dataprijzen; SELECT saldo FROM users WHERE email='"+req.session.email+"'; SELECT allow_new FROM settings;",[1,2, 3], function(err ,result){
+    con.query("SELECT * FROM dataprijzen; SELECT saldo FROM users WHERE email='"+req.session.email+"'; SELECT * FROM settings;SELECT * FROM beurten WHERE email='"+req.session.email+"' AND used<devices",[1,2, 3,4], function(err ,result){
       if(err) console.log(err)
-      else if(result.length&&result[2][0].allow_new){ 
+      else if(result.length&&result[2][0].allow_new&&result[3].length<result[2][0].max_beurten){ 
        let price= calcDataPrice(result[0], req.body)
        let str = "0123456789azeretyuiopqsdfghjklmwxcvbn"
        let password=""
@@ -432,6 +433,7 @@ app.post("/user/dashboard/create-new-data", function(req,res){
        else res.send({success:false, msg: "Deze optie is niet meer geldig."})
     }
     else if(!result[2][0].allow_new) res.send({success:false, msg: "Het is momenteel niet mogelijk nieuwe beurten aan te maken."})
+    else if(result[3].length>=result[2][0].max_beurten) res.send({success:false, msg: "Je hebt het maximum aantal beurten bereikt."})
     else res.send({success:false, msg: "Er ging iets mis."})
     })
   }
