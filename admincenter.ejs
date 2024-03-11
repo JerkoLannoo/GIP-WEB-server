@@ -23,7 +23,7 @@
             <br>
             <p id="info-pop-up-data" class="name-el" style="font-size: 14pt;"></p>
             <div id="info-pop-up-time">
-                <label for="info-pop-up-amount" class="name-el" >Nieuwe tijd:</label>
+                <label for="info-pop-up-amount" class="name-el" style="margin-top: 10px;" >Nieuwe tijd:</label>
                 <span  class="value-el" >
                     <input type="number" value="1"name="duration" id="duration" value="1" min="1" max="30" style="width: 50px;">&ensp;
                     <select name="" id="duration-select">
@@ -33,7 +33,7 @@
                 </select>
             </span>
             </div>
-            <button style="margin: auto; margin-top: 10px;" onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="info-pop-up-btn">Sluiten</button>
+            <button style="margin: auto; margin-top: 50px;" onclick="this.parentElement.style.display='none';document.getElementById('pop-up-background').style.display='none';" id="info-pop-up-btn" style="margin-top: 10px;">Sluiten</button>
             <button id="price-submit-button" style="margin-top: 10px;">Wijzigen</button>
             <br>
         </div>
@@ -101,17 +101,18 @@
             <button onclick="changeNetworkSettings()">Wijzigingen opslaan</button>
             <br><br>
         </div>
-        <div id="users" class="main-window" style="display: none;">
+        <div id="users" class="main-window" style="display: none; width: 800px !important;">
             <h1>GIP gebruikers</h1>
             <hr>
             <p id="users-info" style="color: red;"></p>
-            <input type="text" placeholder="Gebruikers zoeken..." style="font-size: large; width: 90%; margin: auto;">
+            <input type="text" placeholder="Gebruikers zoeken..." style="font-size: large; width: 90%; margin: auto;" onkeyup="searchUsers(this.value)">
             <br>
             <br>
             <table style="width: 100%;">
                 <thead>
                     <th>Gebruikersnaam</th>
                     <th>E-mail</th>
+                    <th>Actief</th>
                     <th>Wijzigen</th>
                 </thead>
                 <tbody id="user-table-body">
@@ -138,7 +139,7 @@ function getAllUsers(){
     .then(data=>{
         console.log(data)
         users=data
-        createUserChart()
+        createUserChart(data)
     }).catch(err=>{
         console.log(err)
         document.getElementById("users-info").innerText="Er ging iets mis. Kon niet alle gebruikers ophalen."
@@ -210,7 +211,20 @@ function changeNetworkSettings(){
                 }
                 }
 }
-function createUserChart(){
+function searchUsers(query){
+let result=[];
+qeury = query.toLowerCase()
+if(query.length){
+    for(let i=0; i<users.length;i++){
+if(users[i].username.toLowerCase().match(query)){
+    result.push(users[i])
+}
+}
+createUserChart(result)
+}
+else createUserChart(users)
+}
+function createUserChart(users){
 let element = document.getElementById("user-table-body")
 element.innerHTML=""
 for(let i=0; i<users.length;i++){
@@ -227,6 +241,10 @@ for(let i=0; i<users.length;i++){
    // wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
     wijzigenKnop.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>'
     wijzigen.appendChild(wijzigenKnop)
+    let active = document.createElement("td")
+    if(users[i].active) active.innerHTML = '<i class="fa-solid fa-check"></i>'
+    else active.innerHTML = '<i class="fa-solid fa-xmark"></i>'
+    userRow.appendChild(active)
     let infoKnop = document.createElement("button")
     infoKnop.setAttribute("class", "wijzigenknop")
    // wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
@@ -544,7 +562,7 @@ font-size: 14pt;
 text-align: center !important;
 animation: popupanimation 0.3s;
 background-color: white;
-position: absolute;
+position: fixed;
 border-radius: 5px;
 border: 2px solid gray;
 z-index: 6;
@@ -662,7 +680,7 @@ box-shadow: none;
 #info-pop-up{
 animation: infopupopanimation 0.3s;
 background-color: white;
-position: absolute;
+position: fixed;
 border-radius: 15px;
 border: 2px solid gray;
 z-index: 6;
