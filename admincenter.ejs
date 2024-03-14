@@ -101,7 +101,7 @@
             <button onclick="changeNetworkSettings()">Wijzigingen opslaan</button>
             <br><br>
         </div>
-        <div id="users" class="main-window" style="display: none; width: 800px !important;">
+        <div id="users" class="main-window" style="display: none; width: 850px !important;">
             <h1>GIP gebruikers</h1>
             <hr>
             <p id="users-info" style="color: red;"></p>
@@ -113,7 +113,7 @@
                     <th>Gebruikersnaam</th>
                     <th>E-mail</th>
                     <th>Actief</th>
-                    <th>Wijzigen</th>
+                    <th>Acties</th>
                 </thead>
                 <tbody id="user-table-body">
 
@@ -227,29 +227,61 @@ else createUserChart(users)
 function createUserChart(users){
 let element = document.getElementById("user-table-body")
 element.innerHTML=""
-for(let i=0; i<users.length;i++){
+console.log(users.user)
+for(let i=0; i<users.user.length;i++){
     let userRow = document.createElement("tr")
     let userRowUsername = document.createElement("td")
-    userRowUsername.innerText = users[i].username
+    userRowUsername.innerText = users.user[i].username
     userRow.appendChild(userRowUsername)
     let userRowEmail = document.createElement("td")
-    userRowEmail.innerText = users[i].email
+    userRowEmail.innerText = users.user[i].email
     userRow.appendChild(userRowEmail)
     let wijzigen = document.createElement("td")
     let wijzigenKnop = document.createElement("button")
     wijzigenKnop.setAttribute("class", "wijzigenknop")
-   // wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
     wijzigenKnop.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>'
+    wijzigenKnop.setAttribute("title", "Wijzig gegevens")
     wijzigen.appendChild(wijzigenKnop)
     let active = document.createElement("td")
-    if(users[i].active) active.innerHTML = '<i class="fa-solid fa-check"></i>'
+    if(users.user[i].active) active.innerHTML = '<i class="fa-solid fa-check"></i>'
+    else if(users.blacklist.filter(e => e.email === users.user[i].email)&&users.blacklist.length) {
+        active.style.color = "red"
+        active.innerHTML = '<i class="fa-solid fa-xmark"></i>'
+    } 
     else active.innerHTML = '<i class="fa-solid fa-xmark"></i>'
     userRow.appendChild(active)
     let infoKnop = document.createElement("button")
     infoKnop.setAttribute("class", "wijzigenknop")
-   // wijzigenKnop.setAttribute("onclick", "showPricePopup("+i+", 'data')")
     infoKnop.innerHTML = '<i class="fa-solid fa-info"></i>'
+    infoKnop.setAttribute("title", "Toon info")
     wijzigen.appendChild(infoKnop)
+    let registreer = document.createElement("button")
+    registreer.setAttribute("class", "wijzigenknop")
+    registreer.innerHTML = '<i class="fa-solid fa-registered"></i>'
+    registreer.setAttribute("title", "Log gebruiker in op netwerk")
+    registreer.setAttribute("onclick", "registerUser('"+users.user[i].email+"', '"+users.user[i].username+"')")
+    wijzigen.appendChild(registreer)
+    let ban = document.createElement("button")
+    ban.setAttribute("class", "delKnop")
+    if(users.blacklist.filter(e => e.email === users.user[i].email).length&&users.blacklist.length) {
+        ban.innerHTML = '<i class="fa-solid fa-lock-open"></i>'
+        ban.setAttribute("title", "Laat gebruiker toe om in te loggen op netwerk")
+        ban.style.backgroundColor = "green"
+        ban.style.borderColor = "green"
+    } 
+    else{
+        ban.innerHTML = '<i class="fa-solid fa-lock"></i>'
+        ban.setAttribute("title", "Verbied gebruiker om in te loggen op netwerk")
+        ban.style.backgroundColor = "red"
+        ban.style.borderColor = "red"
+    }
+    ban.setAttribute("onclick", "banUser('"+users.user[i].email+"', '"+users.user[i].username+"')")
+    wijzigen.appendChild(ban)
+    let delUser = document.createElement("button")
+    delUser.innerHTML = '<i class="fa-solid fa-trash"></i>'
+    delUser.setAttribute("class", "delKnop")
+    delUser.setAttribute("title", "Gebruiker verwijderen")
+    wijzigen.appendChild(delUser)
     userRow.appendChild(wijzigen)
     element.appendChild(userRow)
 }
@@ -343,6 +375,38 @@ function deleteBeurt(price, amount, type){
                      popupInfo.style.color="black"
                      popupInfo.innerText="Deze beurt is verwijderd."
                      getAllPrices();
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                }
+}
+function banUser(email, username){
+    popup.style.display="block"
+        popupBackground.style.display="block"
+        popupInfo.innerText="Wacht even..."
+        document.getElementById("pop-up-spinner").style.display="block"
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/admin/dashboard/ban-user", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        var data = "email="+email+"&username="+username
+        xhr.send(data)
+        xhr.onreadystatechange = () => {
+        document.getElementById("pop-up-spinner").style.display="none"
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText=response.msg
+                     getAllUsers()
                     }
                     else{
                 popupInfo.style.color="red"
@@ -470,9 +534,9 @@ function showTab(el, btn){
                      getAllPrices();
                     }
                     else{
-                popupInfo.style.color="red"
-                popupInfo.innerText=response.msg
-                popupBtn.innerText="Sluiten"
+                    popupInfo.style.color="red"
+                    popupInfo.innerText=response.msg
+                    popupBtn.innerText="Sluiten"
                     }
                 }
                 else{
@@ -528,8 +592,43 @@ function showTab(el, btn){
                 popupBtn.innerText="Sluiten"
                 }
         }
+        function registerUser(email, username){
+            popup.style.display="block"
+            popupBackground.style.display="block"
+            popupInfo.innerText="Wacht even..."
+            document.getElementById("pop-up-spinner").style.display="block"
+            const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/admin/dashboard/register-user", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                var data = "email="+email + "&username="+username
+                xhr.send(data)
+                xhr.onreadystatechange = () => {
+                    document.getElementById("pop-up-spinner").style.display="none"
+                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    let response=JSON.parse(xhr.response)
+                    if(response.success){
+                     popupInfo.style.color="black"
+                     popupInfo.innerText=response.msg
+                    }
+                    else{
+                popupInfo.style.color="red"
+                popupInfo.innerText=response.msg
+                popupBtn.innerText="Sluiten"
+                    }
+                }
+                else{
+                popupInfo.style.color="red"
+                popupInfo.innerText="Er ging iets mis. Probeer het later opnieuw." 
+                popupBtn.innerText="Sluiten"
+                }
+                };
+        }
     </script>
     <style>
+.delKnop{
+    background-color: red;
+    border-color: red;
+}
 .delKnop:hover{
     transition-duration: 0.4s;
 background-color: purple !important;

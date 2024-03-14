@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const app = express()
 const http = require('http');
+const https = require('https');
 var server=http.createServer(app);
 var querystring = require("querystring")
 const url = require('url');
@@ -12,6 +13,9 @@ const mail=require("./mail.js")
 var session=require("express-session");
 const { error } = require('console');
 const { rejects } = require('assert');
+const { send } = require('process');
+var token;
+pfLogin()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -54,6 +58,7 @@ setInterval(() => {
   });
 }, 3600000);
 setInterval(() => {
+  token = pfLogin()
   con.query("DELETE FROM verify WHERE time=1;", function (err, rows) {
     if (err) console.log(err);
     else console.log("DELETED "+rows+" from verify")
@@ -442,15 +447,24 @@ app.post("/user/dashboard/create-new-data", function(req,res){
 app.post("/user/dashboard/set-saldo", function(req,res){
   if(req.session.login && !req.session.admin){
     console.log(req.body)
-con.query("UPDATE users SET saldo=saldo+"+req.body.saldo+" WHERE email='"+req.session.email+"'", function(err,result){
-  if(err) {
-    console.log(err)
-    res.sendStatus(400)
+    con.query("SELECT max_saldo FROM settings; SELECT saldo FROM users WHERE email='"+req.session.email+"'", [1,2], function(err, result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else if(result[0][0].max_saldo>=parseFloat(req.body.saldo)+result[1][0].saldo){
+        con.query("UPDATE users SET saldo=saldo+"+req.body.saldo+" WHERE email='"+req.session.email+"'", function(err,result){
+          if(err) {
+            console.log(err)
+            res.send(400)
+          }
+          else res.send({success:true})
+        })
+      }
+      else res.send({success:false, msg:"Je zit boven het maximum toegelaten saldo."})
+    })
   }
-  else res.sendStatus(200)
-})
-  }
-  else res.sendStatus(401)
+  else res.send(401)
 })
 app.get("/user/dashboard/get-saldo", function(req,res){
   if(req.session.login && !req.session.admin){
@@ -638,7 +652,7 @@ else res.sendStatus(401)
 app.get("/admin/dashboard/get-all-users", function(req,res){
   if(req.session.login&&req.session.admin){
     return new Promise((resolve, reject)=>{
-      con.query("SELECT email, username FROM users", function(err, result){
+      con.query("SELECT email, username FROM users; SELECT * FROM blacklist;",[1,2], function(err, result){
         if(err){
           console.log(err)
           res.sendStatus(500)
@@ -657,20 +671,20 @@ app.get("/admin/dashboard/get-all-users", function(req,res){
         else{
           let obj =[]
           let users= []
-          for(let i=0; i<value.length;i++){
+          for(let i=0; i<value[0].length;i++){
             let loop=false
             let active = 0;
             let user=null;
             for(let y=0;y<result.length;y++){
-              console.log("username: "+value[i].username)
-              if(result[y].pid.startsWith(value[i].username)) {
+              //console.log("username: "+value[0][i].username)
+              if(result[y].pid.startsWith(value[0][i].username)) {
                 if(result[y].status==='reg') active++
               } 
             }
-            obj.push(Object.assign({}, value[i], {active: active}))
+            obj.push(Object.assign({}, value[0][i], {active: active}))
           }
          // Array.prototype.push.apply(value,result); 
-          res.send(obj)
+          res.send({user: obj, blacklist: value[1]})
         }
       })
     }).catch(err=>{
@@ -707,6 +721,64 @@ app.put("/admin/dashboard/change-network-settings", function(req,res){
   }
 else res.send(401)
 })
+app.post("/admin/dashboard/register-user", function(req, res){
+  if(req.session.login&&req.session.admin){
+    pfcon.query("SELECT mac FROM node WHERE pid LIKE "+JSON.stringify(req.body.username+"%"), function(err,result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else if(result.length){
+        let macs = []
+        for (let i=0;i<result.length;i++) macs.push(result[i].mac)
+        regUser(macs, (success)=>{//callback gebruiken om te wachten op resultaat
+          console.log("is user registered? "+success)
+          if(success.length){
+            let devices=0;
+            let alreadyRegistered=0;
+            for(let i=0;i<success.length;i++) {
+              if(success[i].status==="success") devices++
+              else if(success[i].status==="skipped") alreadyRegistered++
+            } 
+            if(alreadyRegistered==1)  res.send({success: true, msg: "Er zijn "+devices+ " apparaten ingelogd.\n"+alreadyRegistered+ " was al ingelogd."})
+            else  res.send({success: true, msg: "Er zijn "+devices+ " apparaten ingelogd.\n"+alreadyRegistered+ " waren al ingelogd."})
+          }
+          else res.send({success: false, msg: "Kon niet communiceren met het netwerk."})
+        });
+      }
+      else res.send({success:false, msg:"Geen apparaten om te registreren."})
+    })
+  }
+})
+app.post("/admin/dashboard/ban-user", function(req,res){
+  if(req.session.login&&req.session.admin){
+    con.query("SELECT * FROM blacklist WHERE email="+JSON.stringify(req.body.email), function(err, result){
+      if(err){
+        console.log(err)
+        res.send(500)
+      }
+      else if(result.length) {
+        con.query("DELETE FROM blacklist WHERE email="+JSON.stringify(req.body.email), function(err, result){
+          if(err){
+            console.log(err)
+            res.send(500)
+          }
+          else res.send({success:true, msg: "Gebruiker verwijderd van zwarte lijst."})
+        })
+      }
+      else{
+        con.query("INSERT INTO blacklist VALUES("+JSON.stringify(req.body.email)+", "+JSON.stringify(req.body.username)+")", function(err, result){
+          if(err){
+            console.log(err)
+            res.send(500)
+          }
+          else res.send({success:true, msg: "Gebruiker toegevoegd aan zwarte lijst."})
+        })
+      }
+    })
+  }
+  else res.send(401)
+})
 app.get("/admin/logout",function(req,res){
 if(req.session.login&&req.session.admin){
   req.session.admin = false;
@@ -725,6 +797,64 @@ app.use(function(req,res){
 server.listen(8008, ()=>{
   console.log("luisteren")
 })
+ function pfLogin (){
+  console.log("logging in")
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+  data={"username":"admin", "password": "Gip"}
+  var options = {
+    host: '192.168.100.2',
+    path: "/api/v1/login",
+    port: 9999,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }}
+  var httpreq = https.request(options, function (response) {
+    response.setEncoding('utf8');
+    console.log(response.statusCode)
+    response.on('data', (d) => {
+      let res = JSON.parse(d)
+      console.log("loged in, token:" +res.token)
+      token = res.token
+    });
+    response.on('error', (d) => {
+    });
+})
+  httpreq.end(JSON.stringify(data))
+}
+function regUser(macs, callback){
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+    console.log("token: "+token + ", mac: "+macs)
+    let data={
+      "items": macs
+    }
+    var options = {
+      host: '192.168.100.2',
+      path: "/api/v1/nodes/bulk_register",
+      port: 9999,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization' : token
+      }
+    }
+    var httpreq = https.request(options, function (response) {
+     // response.setEncoding('utf8');
+     console.log(response.statusCode +" "+ response.statusMessage)
+     if(response.statusCode==200){
+      response.on('data', (d) => {
+        let res = JSON.parse(d)
+        console.log(res.items)
+        callback(res.items) 
+      });
+     }
+     else  callback("") 
+     response.on("error", ()=>{
+      callback("") 
+     })
+    });
+    httpreq.end(JSON.stringify(data))
+}
 function calcDataPrice(result, config){
   let prices=[]
   let price=0.00

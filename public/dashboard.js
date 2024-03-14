@@ -1,3 +1,4 @@
+
 var currentTab=0;
 var eenvoudigVerbruik=[]
 var verbruik = []
@@ -404,15 +405,23 @@ function setSaldo(){
         console.log(data)
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "/user/dashboard/set-saldo", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");//kan ook met "application/json" als je JSON wilt doorsturen
         xhr.send(data)
         xhr.onreadystatechange = () => {
         document.getElementById("pop-up-spinner").style.display="none"
          if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        popupInfo.style.color="black"
-        popupInfo.innerText="Saldo toegevoegd"
-        getSaldo()
-        popupBtn.innerText="Sluiten"
+            console.log(xhr.response)
+            let response=JSON.parse(xhr.response)
+            if(response.success){
+                popupInfo.style.color="black"
+                popupInfo.innerText="Je saldo is aangepast."
+                getSaldo()
+               }
+               else{
+               popupInfo.style.color="red"
+               popupInfo.innerText=response.msg
+               popupBtn.innerText="Sluiten"
+               }
         }
         else{
         popupInfo.style.color="red"
